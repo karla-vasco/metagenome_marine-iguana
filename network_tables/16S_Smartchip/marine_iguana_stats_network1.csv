@@ -1,0 +1,566 @@
+Id,Label,timeset,abundance,type,class,gene,Degree,Weighted Degree,Eccentricity,closnesscentrality,harmonicclosnesscentrality,betweenesscentrality,Authority,Hub,modularity_class,pageranks,componentnumber,clustering,triangles,eigencentrality
+565,name,,,Taxa,Taxa,name,0,0,0,0,0,0,0,0,406,0.000603,405,0,0,0
+555,Brassicibacter,,,Taxa,Taxa,Brassicibacter,0,0,0,0,0,0,0,0,405,0.000603,404,0,0,0
+550,Tepidibacter,,,Taxa,Taxa,Tepidibacter,0,0,0,0,0,0,0,0,404,0.000603,403,0,0,0
+544,SUP05 cluster,,,Taxa,Taxa,SUP05 cluster,0,0,0,0,0,0,0,0,403,0.000603,402,0,0,0
+541,Anoxybacillus,,,Taxa,Taxa,Anoxybacillus,0,0,0,0,0,0,0,0,402,0.000603,401,0,0,0
+538,Blastocystis,,,Taxa,Taxa,Blastocystis,0,0,0,0,0,0,0,0,401,0.000603,400,0,0,0
+534,Serpentinicella,,,Taxa,Taxa,Serpentinicella,0,0,0,0,0,0,0,0,400,0.000603,399,0,0,0
+533,Hungatella,,,Taxa,Taxa,Hungatella,0,0,0,0,0,0,0,0,399,0.000603,398,0,0,0
+524,Tuzzerella,,,Taxa,Taxa,Tuzzerella,0,0,0,0,0,0,0,0,398,0.000603,397,0,0,0
+523,UCG-009,,,Taxa,Taxa,UCG-009,0,0,0,0,0,0,0,0,397,0.000603,396,0,0,0
+518,Natranaerovirga,,,Taxa,Taxa,Natranaerovirga,0,0,0,0,0,0,0,0,396,0.000603,395,0,0,0
+517,Clostridium sensu stricto 7,,,Taxa,Taxa,Clostridium sensu stricto 7,0,0,0,0,0,0,0,0,395,0.000603,394,0,0,0
+512,Cerasicoccus,,,Taxa,Taxa,Cerasicoccus,0,0,0,0,0,0,0,0,394,0.000603,393,0,0,0
+511,Paludicola,,,Taxa,Taxa,Paludicola,0,0,0,0,0,0,0,0,393,0.000603,392,0,0,0
+510,Clostridium sensu stricto 14,,,Taxa,Taxa,Clostridium sensu stricto 14,0,0,0,0,0,0,0,0,392,0.000603,391,0,0,0
+505,Anaerobacter,,,Taxa,Taxa,Anaerobacter,0,0,0,0,0,0,0,0,391,0.000603,390,0,0,0
+503,Shuttleworthia,,,Taxa,Taxa,Shuttleworthia,0,0,0,0,0,0,0,0,390,0.000603,389,0,0,0
+502,Angelakisella,,,Taxa,Taxa,Angelakisella,0,0,0,0,0,0,0,0,389,0.000603,388,0,0,0
+501,Hathewaya,,,Taxa,Taxa,Hathewaya,0,0,0,0,0,0,0,0,388,0.000603,387,0,0,0
+500,Clostridium sensu stricto 17,,,Taxa,Taxa,Clostridium sensu stricto 17,0,0,0,0,0,0,0,0,387,0.000603,386,0,0,0
+499,Turicibacter,,,Taxa,Taxa,Turicibacter,0,0,0,0,0,0,0,0,386,0.000603,385,0,0,0
+498,Lachnospiraceae AC2044 group,,,Taxa,Taxa,Lachnospiraceae AC2044 group,0,0,0,0,0,0,0,0,385,0.000603,384,0,0,0
+497,Pseudobutyrivibrio,,,Taxa,Taxa,Pseudobutyrivibrio,0,0,0,0,0,0,0,0,384,0.000603,383,0,0,0
+493,Family XIII AD3011 group,,,Taxa,Taxa,Family XIII AD3011 group,0,0,0,0,0,0,0,0,383,0.000603,382,0,0,0
+492,Tepidimicrobium,,,Taxa,Taxa,Tepidimicrobium,0,0,0,0,0,0,0,0,382,0.000603,381,0,0,0
+491,Stomatobaculum,,,Taxa,Taxa,Stomatobaculum,0,0,0,0,0,0,0,0,381,0.000603,380,0,0,0
+490,Helicobacter,,,Taxa,Taxa,Helicobacter,0,0,0,0,0,0,0,0,380,0.000603,379,0,0,0
+488,Fusicatenibacter,,,Taxa,Taxa,Fusicatenibacter,0,0,0,0,0,0,0,0,379,0.000603,378,0,0,0
+484,Lachnospiraceae UCG-007,,,Taxa,Taxa,Lachnospiraceae UCG-007,0,0,0,0,0,0,0,0,378,0.000603,377,0,0,0
+483,Acidaminobacter,,,Taxa,Taxa,Acidaminobacter,0,0,0,0,0,0,0,0,377,0.000603,376,0,0,0
+482,Mogibacterium,,,Taxa,Taxa,Mogibacterium,0,0,0,0,0,0,0,0,376,0.000603,375,0,0,0
+481,Clostridium sensu stricto 10,,,Taxa,Taxa,Clostridium sensu stricto 10,0,0,0,0,0,0,0,0,375,0.000603,374,0,0,0
+480,Clostridium sensu stricto 5,,,Taxa,Taxa,Clostridium sensu stricto 5,0,0,0,0,0,0,0,0,374,0.000603,373,0,0,0
+479,Anaeroplasma,,,Taxa,Taxa,Anaeroplasma,0,0,0,0,0,0,0,0,373,0.000603,372,0,0,0
+478,Coprobacter,,,Taxa,Taxa,Coprobacter,0,0,0,0,0,0,0,0,372,0.000603,371,0,0,0
+476,probable genus 10,,,Taxa,Taxa,probable genus 10,0,0,0,0,0,0,0,0,371,0.000603,370,0,0,0
+475,Butyricimonas,,,Taxa,Taxa,Butyricimonas,0,0,0,0,0,0,0,0,370,0.000603,369,0,0,0
+474,Haloimpatiens,,,Taxa,Taxa,Haloimpatiens,0,0,0,0,0,0,0,0,369,0.000603,368,0,0,0
+473,[Eubacterium] brachy group,,,Taxa,Taxa,[Eubacterium] brachy group,0,0,0,0,0,0,0,0,368,0.000603,367,0,0,0
+472,Anaerovorax,,,Taxa,Taxa,Anaerovorax,0,0,0,0,0,0,0,0,367,0.000603,366,0,0,0
+471,Victivallis,,,Taxa,Taxa,Victivallis,0,0,0,0,0,0,0,0,366,0.000603,365,0,0,0
+470,A2,,,Taxa,Taxa,A2,0,0,0,0,0,0,0,0,365,0.000603,364,0,0,0
+469,Lachnospiraceae XPB1014 group,,,Taxa,Taxa,Lachnospiraceae XPB1014 group,0,0,0,0,0,0,0,0,364,0.000603,363,0,0,0
+467,GCA-900066575,,,Taxa,Taxa,GCA-900066575,0,0,0,0,0,0,0,0,363,0.000603,362,0,0,0
+466,Lachnospiraceae UCG-006,,,Taxa,Taxa,Lachnospiraceae UCG-006,0,0,0,0,0,0,0,0,362,0.000603,361,0,0,0
+465,[Eubacterium] nodatum group,,,Taxa,Taxa,[Eubacterium] nodatum group,0,0,0,0,0,0,0,0,361,0.000603,360,0,0,0
+464,Macellibacteroides,,,Taxa,Taxa,Macellibacteroides,0,0,0,0,0,0,0,0,360,0.000603,359,0,0,0
+462,Fusibacter,,,Taxa,Taxa,Fusibacter,0,0,0,0,0,0,0,0,359,0.000603,358,0,0,0
+460,Lachnospiraceae NK3A20 group,,,Taxa,Taxa,Lachnospiraceae NK3A20 group,0,0,0,0,0,0,0,0,358,0.000603,357,0,0,0
+459,Candidatus Arthromitus,,,Taxa,Taxa,Candidatus Arthromitus,0,0,0,0,0,0,0,0,357,0.000603,356,0,0,0
+456,Monoglobus,,,Taxa,Taxa,Monoglobus,0,0,0,0,0,0,0,0,356,0.000603,355,0,0,0
+455,Clostridium sensu stricto 15,,,Taxa,Taxa,Clostridium sensu stricto 15,0,0,0,0,0,0,0,0,355,0.000603,354,0,0,0
+454,Herbinix,,,Taxa,Taxa,Herbinix,0,0,0,0,0,0,0,0,354,0.000603,353,0,0,0
+452,Clostridioides,,,Taxa,Taxa,Clostridioides,0,0,0,0,0,0,0,0,353,0.000603,352,0,0,0
+451,UCG-004,,,Taxa,Taxa,UCG-004,0,0,0,0,0,0,0,0,352,0.000603,351,0,0,0
+450,Breznakia,,,Taxa,Taxa,Breznakia,0,0,0,0,0,0,0,0,351,0.000603,350,0,0,0
+448,Clostridium sensu stricto 3,,,Taxa,Taxa,Clostridium sensu stricto 3,0,0,0,0,0,0,0,0,350,0.000603,349,0,0,0
+447,Candidatus Soleaferrea,,,Taxa,Taxa,Candidatus Soleaferrea,0,0,0,0,0,0,0,0,349,0.000603,348,0,0,0
+445,T2WK15B57,,,Taxa,Taxa,T2WK15B57,0,0,0,0,0,0,0,0,348,0.000603,347,0,0,0
+444,Marvinbryantia,,,Taxa,Taxa,Marvinbryantia,0,0,0,0,0,0,0,0,347,0.000603,346,0,0,0
+443,Lachnospiraceae ND3007 group,,,Taxa,Taxa,Lachnospiraceae ND3007 group,0,0,0,0,0,0,0,0,346,0.000603,345,0,0,0
+442,Coprococcus,,,Taxa,Taxa,Coprococcus,0,0,0,0,0,0,0,0,345,0.000603,344,0,0,0
+440,Weissella,,,Taxa,Taxa,Weissella,0,0,0,0,0,0,0,0,344,0.000603,343,0,0,0
+439,Peptoclostridium,,,Taxa,Taxa,Peptoclostridium,0,0,0,0,0,0,0,0,343,0.000603,342,0,0,0
+438,Fenollaria,,,Taxa,Taxa,Fenollaria,0,0,0,0,0,0,0,0,342,0.000603,341,0,0,0
+437,Clostridium sensu stricto 6,,,Taxa,Taxa,Clostridium sensu stricto 6,0,0,0,0,0,0,0,0,341,0.000603,340,0,0,0
+434,Clostridium sensu stricto 9,,,Taxa,Taxa,Clostridium sensu stricto 9,0,0,0,0,0,0,0,0,340,0.000603,339,0,0,0
+433,Anaerocolumna,,,Taxa,Taxa,Anaerocolumna,0,0,0,0,0,0,0,0,339,0.000603,338,0,0,0
+432,NK4A214 group,,,Taxa,Taxa,NK4A214 group,0,0,0,0,0,0,0,0,338,0.000603,337,0,0,0
+430,Anaerostipes,,,Taxa,Taxa,Anaerostipes,0,0,0,0,0,0,0,0,337,0.000603,336,0,0,0
+429,Faecalibacterium,,,Taxa,Taxa,Faecalibacterium,0,0,0,0,0,0,0,0,336,0.000603,335,0,0,0
+428,Acetitomaculum,,0.04697,Taxa,Taxa,Acetitomaculum,0,0,0,0,0,0,0,0,335,0.000603,334,0,0,0
+426,Desulfosporosinus,,,Taxa,Taxa,Desulfosporosinus,0,0,0,0,0,0,0,0,334,0.000603,333,0,0,0
+425,Tyzzerella,,,Taxa,Taxa,Tyzzerella,0,0,0,0,0,0,0,0,333,0.000603,332,0,0,0
+424,Christensenellaceae R-7 group,,,Taxa,Taxa,Christensenellaceae R-7 group,0,0,0,0,0,0,0,0,332,0.000603,331,0,0,0
+423,Dorea,,,Taxa,Taxa,Dorea,0,0,0,0,0,0,0,0,331,0.000603,330,0,0,0
+422,[Ruminococcus] gauvreauii group,,,Taxa,Taxa,[Ruminococcus] gauvreauii group,0,0,0,0,0,0,0,0,330,0.000603,329,0,0,0
+419,Lachnospiraceae FCS020 group,,,Taxa,Taxa,Lachnospiraceae FCS020 group,0,0,0,0,0,0,0,0,329,0.000603,328,0,0,0
+418,Alistipes,,,Taxa,Taxa,Alistipes,0,0,0,0,0,0,0,0,328,0.000603,327,0,0,0
+417,Sedimentibacter,,,Taxa,Taxa,Sedimentibacter,0,0,0,0,0,0,0,0,327,0.000603,326,0,0,0
+415,[Eubacterium] hallii group,,,Taxa,Taxa,[Eubacterium] hallii group,0,0,0,0,0,0,0,0,326,0.000603,325,0,0,0
+413,Bacillus,,,Taxa,Taxa,Bacillus,0,0,0,0,0,0,0,0,325,0.000603,324,0,0,0
+412,[Eubacterium] ventriosum group,,0.11774,Taxa,Taxa,[Eubacterium] ventriosum group,0,0,0,0,0,0,0,0,324,0.000603,323,0,0,0
+411,Lachnospira,,,Taxa,Taxa,Lachnospira,0,0,0,0,0,0,0,0,323,0.000603,322,0,0,0
+410,Epulopiscium,,0.12217,Taxa,Taxa,Epulopiscium,0,0,0,0,0,0,0,0,322,0.000603,321,0,0,0
+409,Dethiosulfatibacter,,,Taxa,Taxa,Dethiosulfatibacter,0,0,0,0,0,0,0,0,321,0.000603,320,0,0,0
+408,Intestinibacter,,0.13051,Taxa,Taxa,Intestinibacter,0,0,0,0,0,0,0,0,320,0.000603,319,0,0,0
+406,[Eubacterium] eligens group,,,Taxa,Taxa,[Eubacterium] eligens group,0,0,0,0,0,0,0,0,319,0.000603,318,0,0,0
+405,Eggerthella,,,Taxa,Taxa,Eggerthella,0,0,0,0,0,0,0,0,318,0.000603,317,0,0,0
+402,Blautia,,0.16429,Taxa,Taxa,Blautia,0,0,0,0,0,0,0,0,317,0.000603,316,0,0,0
+400,Ruminococcus,,,Taxa,Taxa,Ruminococcus,0,0,0,0,0,0,0,0,316,0.000603,315,0,0,0
+398,Romboutsia,,0.24007,Taxa,Taxa,Romboutsia,0,0,0,0,0,0,0,0,315,0.000603,314,0,0,0
+397,UCG-001,,,Taxa,Taxa,UCG-001,0,0,0,0,0,0,0,0,314,0.000603,313,0,0,0
+396,[Ruminococcus] torques group,,0.26372,Taxa,Taxa,[Ruminococcus] torques group,0,0,0,0,0,0,0,0,313,0.000603,312,0,0,0
+395,Sarcina,,0.28652,Taxa,Taxa,Sarcina,0,0,0,0,0,0,0,0,312,0.000603,311,0,0,0
+393,Fonticella,,0.32202,Taxa,Taxa,Fonticella,0,0,0,0,0,0,0,0,311,0.000603,310,0,0,0
+392,Clostridium sensu stricto 2,,0.3281,Taxa,Taxa,Clostridium sensu stricto 2,0,0,0,0,0,0,0,0,310,0.000603,309,0,0,0
+390,Akkermansia,,,Taxa,Taxa,Akkermansia,0,0,0,0,0,0,0,0,309,0.000603,308,0,0,0
+389,[Eubacterium] xylanophilum group,,0.36048,Taxa,Taxa,[Eubacterium] xylanophilum group,0,0,0,0,0,0,0,0,308,0.000603,307,0,0,0
+386,Anaerosporobacter,,0.45719,Taxa,Taxa,Anaerosporobacter,0,0,0,0,0,0,0,0,307,0.000603,306,0,0,0
+384,Lachnospiraceae NC2004 group,,0.48997,Taxa,Taxa,Lachnospiraceae NC2004 group,0,0,0,0,0,0,0,0,306,0.000603,305,0,0,0
+383,Lachnospiraceae NK4A136 group,,0.53465,Taxa,Taxa,Lachnospiraceae NK4A136 group,0,0,0,0,0,0,0,0,305,0.000603,304,0,0,0
+382,Lachnoclostridium,,0.53577,Taxa,Taxa,Lachnoclostridium,0,0,0,0,0,0,0,0,304,0.000603,303,0,0,0
+380,Peptoniphilus,,,Taxa,Taxa,Peptoniphilus,0,0,0,0,0,0,0,0,303,0.000603,302,0,0,0
+379,uncultured,,2.42418,Taxa,Taxa,uncultured,0,0,0,0,0,0,0,0,302,0.000603,301,0,0,0
+378,Paraclostridium,,5.18064,Taxa,Taxa,Paraclostridium,0,0,0,0,0,0,0,0,301,0.000603,300,0,0,0
+377,Terrisporobacter,,13.66536,Taxa,Taxa,Terrisporobacter,0,0,0,0,0,0,0,0,300,0.000603,299,0,0,0
+376,Clostridium sensu stricto 1,,14.34676,Taxa,Taxa,Clostridium sensu stricto 1,0,0,0,0,0,0,0,0,299,0.000603,298,0,0,0
+374,blaZ,,0,ARG,Beta_Lactam,blaZ,0,0,0,0,0,0,0,0,298,0.000603,297,0,0,0
+373,blaTLA,,0,ARG,Beta_Lactam,blaTLA,0,0,0,0,0,0,0,0,297,0.000603,296,0,0,0
+372,blaSFO,,0,ARG,Beta_Lactam,blaSFO,0,0,0,0,0,0,0,0,296,0.000603,295,0,0,0
+370,ampC/blaDHA,,0,ARG,Beta_Lactam,ampC/blaDHA,0,0,0,0,0,0,0,0,295,0.000603,294,0,0,0
+368,cepA,,0,ARG,Beta_Lactam,cepA,0,0,0,0,0,0,0,0,294,0.000603,293,0,0,0
+365,cphA,,0,ARG,Beta_Lactam,cphA,0,0,0,0,0,0,0,0,293,0.000603,292,0,0,0
+364,aph(2)-Id,,0,ARG,Aminoglycoside,aph(2)-Id,0,0,0,0,0,0,0,0,292,0.000603,291,0,0,0
+363,blaPSE,,0,ARG,Beta_Lactam,blaPSE,0,0,0,0,0,0,0,0,291,0.000603,290,0,0,0
+361,blaROB,,0,ARG,Beta_Lactam,blaROB,0,0,0,0,0,0,0,0,290,0.000603,289,0,0,0
+360,blaOKP,,0,ARG,Beta_Lactam,blaOKP,0,0,0,0,0,0,0,0,289,0.000603,288,0,0,0
+359,bla1,,0,ARG,Beta_Lactam,bla1,0,0,0,0,0,0,0,0,288,0.000603,287,0,0,0
+358,blaVEB,,0,ARG,Beta_Lactam,blaVEB,0,0,0,0,0,0,0,0,287,0.000603,286,0,0,0
+357,blaPAO/PDC,,0,ARG,Beta_Lactam,blaPAO/PDC,0,0,0,0,0,0,0,0,286,0.000603,285,0,0,0
+356,blaOCH,,0,ARG,Beta_Lactam,blaOCH,0,0,0,0,0,0,0,0,285,0.000603,284,0,0,0
+355,blaMOX/blaCMY,,0,ARG,Beta_Lactam,blaMOX/blaCMY,0,0,0,0,0,0,0,0,284,0.000603,283,0,0,0
+354,blaACC-1,,0,ARG,Beta_Lactam,blaACC-1,0,0,0,0,0,0,0,0,283,0.000603,282,0,0,0
+353,aadA5,,0,ARG,Aminoglycoside,aadA5,0,0,0,0,0,0,0,0,282,0.000603,281,0,0,0
+352,cfiA,,0,ARG,Beta_Lactam,cfiA,0,0,0,0,0,0,0,0,281,0.000603,280,0,0,0
+351,optrA,,0.000003,ARG,Amphenicol,optrA,0,0,0,0,0,0,0,0,280,0.000603,279,0,0,0
+349,fexA,,0,ARG,Amphenicol,fexA,0,0,0,0,0,0,0,0,279,0.000603,278,0,0,0
+347,catQ,,0.000016,ARG,Amphenicol,catQ,0,0,0,0,0,0,0,0,278,0.000603,277,0,0,0
+346,catP,,0,ARG,Amphenicol,catP,0,0,0,0,0,0,0,0,277,0.000603,276,0,0,0
+345,cat(pC221),,0,ARG,Amphenicol,cat(pC221),0,0,0,0,0,0,0,0,276,0.000603,275,0,0,0
+342,aadA2,,0,ARG,Aminoglycoside,aadA2,0,0,0,0,0,0,0,0,275,0.000603,274,0,0,0
+340,catA2,,0,ARG,Amphenicol,catA2,0,0,0,0,0,0,0,0,274,0.000603,273,0,0,0
+339,cat,,0,ARG,Amphenicol,cat,0,0,0,0,0,0,0,0,273,0.000603,272,0,0,0
+338,cmlA5,,0,ARG,Amphenicol,cmlA5,0,0,0,0,0,0,0,0,272,0.000603,271,0,0,0
+337,catA1,,0,ARG,Amphenicol,catA1,0,0,0,0,0,0,0,0,271,0.000603,270,0,0,0
+335,cmlA1,,0,ARG,Amphenicol,cmlA1,0,0,0,0,0,0,0,0,270,0.000603,269,0,0,0
+334,ceoA,,0,ARG,Amphenicol,ceoA,0,0,0,0,0,0,0,0,269,0.000603,268,0,0,0
+333,catB8,,0,ARG,Amphenicol,catB8,0,0,0,0,0,0,0,0,268,0.000603,267,0,0,0
+332,catB3,,0,ARG,Amphenicol,catB3,0,0,0,0,0,0,0,0,267,0.000603,266,0,0,0
+331,aac(6)-Ib,,0,ARG,Aminoglycoside,aac(6)-Ib,0,0,0,0,0,0,0,0,266,0.000603,265,0,0,0
+330,aac(3)-Xa_2,,0,ARG,Aminoglycoside,aac(3)-Xa_2,0,0,0,0,0,0,0,0,265,0.000603,264,0,0,0
+329,ant6-ib,,0,ARG,Aminoglycoside,ant6-ib,0,0,0,0,0,0,0,0,264,0.000603,263,0,0,0
+328,aph3-III,,0,ARG,Aminoglycoside,aph3-III,0,0,0,0,0,0,0,0,263,0.000603,262,0,0,0
+326,aph6ia,,0.000267,ARG,Aminoglycoside,aph6ia,0,0,0,0,0,0,0,0,262,0.000603,261,0,0,0
+325,aac(6)-Iy,,0.00021,ARG,Aminoglycoside,aac(6)-Iy,0,0,0,0,0,0,0,0,261,0.000603,260,0,0,0
+324,aac(6)I1,,0,ARG,Aminoglycoside,aac(6)I1,0,0,0,0,0,0,0,0,260,0.000603,259,0,0,0
+320,sat4,,0,ARG,Aminoglycoside,sat4,0,0,0,0,0,0,0,0,259,0.000603,258,0,0,0
+319,aph(3)-ia,,0,ARG,Aminoglycoside,aph(3)-ia,0,0,0,0,0,0,0,0,258,0.000603,257,0,0,0
+318,aph4-ia,,0,ARG,Aminoglycoside,aph4-ia,0,0,0,0,0,0,0,0,257,0.000603,256,0,0,0
+317,aph3-viia,,0,ARG,Aminoglycoside,aph3-viia,0,0,0,0,0,0,0,0,256,0.000603,255,0,0,0
+316,aph3-ib,,0,ARG,Aminoglycoside,aph3-ib,0,0,0,0,0,0,0,0,255,0.000603,254,0,0,0
+315,ant6-ia,,0,ARG,Aminoglycoside,ant6-ia,0,0,0,0,0,0,0,0,254,0.000603,253,0,0,0
+314,ant4-ib,,0,ARG,Aminoglycoside,ant4-ib,0,0,0,0,0,0,0,0,253,0.000603,252,0,0,0
+313,aadB,,0,ARG,Aminoglycoside,aadB,0,0,0,0,0,0,0,0,252,0.000603,251,0,0,0
+312,aadA17,,0,ARG,Aminoglycoside,aadA17,0,0,0,0,0,0,0,0,251,0.000603,250,0,0,0
+311,aadA16,,0,ARG,Aminoglycoside,aadA16,0,0,0,0,0,0,0,0,250,0.000603,249,0,0,0
+310,aadA10,,0,ARG,Aminoglycoside,aadA10,0,0,0,0,0,0,0,0,249,0.000603,248,0,0,0
+307,aadA6,,0,ARG,Aminoglycoside,aadA6,0,0,0,0,0,0,0,0,248,0.000603,247,0,0,0
+305,vanXA,,0,ARG,Vancomycin,vanXA,0,0,0,0,0,0,0,0,247,0.000603,246,0,0,0
+304,vanA,,0,ARG,Vancomycin,vanA,0,0,0,0,0,0,0,0,246,0.000603,245,0,0,0
+302,vanG,,0,ARG,Vancomycin,vanG,0,0,0,0,0,0,0,0,245,0.000603,244,0,0,0
+299,vanYB,,0,ARG,Vancomycin,vanYB,0,0,0,0,0,0,0,0,244,0.000603,243,0,0,0
+298,vanTG,,0,ARG,Vancomycin,vanTG,0,0,0,0,0,0,0,0,243,0.000603,242,0,0,0
+297,vanTC,,0,ARG,Vancomycin,vanTC,0,0,0,0,0,0,0,0,242,0.000603,241,0,0,0
+296,vanTE,,0,ARG,Vancomycin,vanTE,0,0,0,0,0,0,0,0,241,0.000603,240,0,0,0
+295,vanSE,,0,ARG,Vancomycin,vanSE,0,0,0,0,0,0,0,0,240,0.000603,239,0,0,0
+294,vanSC,,0,ARG,Vancomycin,vanSC,0,0,0,0,0,0,0,0,239,0.000603,238,0,0,0
+292,vanRC4,,0,ARG,Vancomycin,vanRC4,0,0,0,0,0,0,0,0,238,0.000603,237,0,0,0
+290,aac(6)-iz,,0,ARG,Aminoglycoside,aac(6)-iz,0,0,0,0,0,0,0,0,237,0.000603,236,0,0,0
+289,vanRB,,0,ARG,Vancomycin,vanRB,0,0,0,0,0,0,0,0,236,0.000603,235,0,0,0
+288,vanXB,,0,ARG,Vancomycin,vanXB,0,0,0,0,0,0,0,0,235,0.000603,234,0,0,0
+287,vanWB,,0,ARG,Vancomycin,vanWB,0,0,0,0,0,0,0,0,234,0.000603,233,0,0,0
+286,vanSA,,0,ARG,Vancomycin,vanSA,0,0,0,0,0,0,0,0,233,0.000603,232,0,0,0
+285,vanRA,,0,ARG,Vancomycin,vanRA,0,0,0,0,0,0,0,0,232,0.000603,231,0,0,0
+284,vanHB,,0,ARG,Vancomycin,vanHB,0,0,0,0,0,0,0,0,231,0.000603,230,0,0,0
+283,vanHD,,0,ARG,Vancomycin,vanHD,0,0,0,0,0,0,0,0,230,0.000603,229,0,0,0
+281,VanB,,0,ARG,Vancomycin,VanB,0,0,0,0,0,0,0,0,229,0.000603,228,0,0,0
+280,dfrBmulti,,0,ARG,Trimethoprim,dfrBmulti,0,0,0,0,0,0,0,0,228,0.000603,227,0,0,0
+279,aac(6)-iw,,0.000002,ARG,Aminoglycoside,aac(6)-iw,0,0,0,0,0,0,0,0,227,0.000603,226,0,0,0
+277,dfrG,,0,ARG,Trimethoprim,dfrG,0,0,0,0,0,0,0,0,226,0.000603,225,0,0,0
+276,dfrC,,0,ARG,Trimethoprim,dfrC,0,0,0,0,0,0,0,0,225,0.000603,224,0,0,0
+274,dfrA27,,0,ARG,Trimethoprim,dfrA27,0,0,0,0,0,0,0,0,224,0.000603,223,0,0,0
+273,dfrA25,,0,ARG,Trimethoprim,dfrA25,0,0,0,0,0,0,0,0,223,0.000603,222,0,0,0
+272,dfrA22,,0,ARG,Trimethoprim,dfrA22,0,0,0,0,0,0,0,0,222,0.000603,221,0,0,0
+271,dfrA18,,0.00001,ARG,Trimethoprim,dfrA18,0,0,0,0,0,0,0,0,221,0.000603,220,0,0,0
+270,dfrA15,,0,ARG,Trimethoprim,dfrA15,0,0,0,0,0,0,0,0,220,0.000603,219,0,0,0
+269,dfrA10,,0,ARG,Trimethoprim,dfrA10,0,0,0,0,0,0,0,0,219,0.000603,218,0,0,0
+267,dfrA8,,0,ARG,Trimethoprim,dfrA8,0,0,0,0,0,0,0,0,218,0.000603,217,0,0,0
+266,dfra5,,0,ARG,Trimethoprim,dfra5,0,0,0,0,0,0,0,0,217,0.000603,216,0,0,0
+265,dfra21,,0,ARG,Trimethoprim,dfra21,0,0,0,0,0,0,0,0,216,0.000603,215,0,0,0
+264,dfra7,,0,ARG,Trimethoprim,dfra7,0,0,0,0,0,0,0,0,215,0.000603,214,0,0,0
+263,dfra17,,0,ARG,Trimethoprim,dfra17,0,0,0,0,0,0,0,0,214,0.000603,213,0,0,0
+262,dfra14,,0,ARG,Trimethoprim,dfra14,0,0,0,0,0,0,0,0,213,0.000603,212,0,0,0
+261,dfrA12,,0,ARG,Trimethoprim,dfrA12,0,0,0,0,0,0,0,0,212,0.000603,211,0,0,0
+260,dfrA1,,0,ARG,Trimethoprim,dfrA1,0,0,0,0,0,0,0,0,211,0.000603,210,0,0,0
+259,tet44,,0,ARG,Tetracycline,tet44,0,0,0,0,0,0,0,0,210,0.000603,209,0,0,0
+258,tet(38),,0,ARG,Tetracycline,tet(38),0,0,0,0,0,0,0,0,209,0.000603,208,0,0,0
+256,tetJ,,0,ARG,Tetracycline,tetJ,0,0,0,0,0,0,0,0,208,0.000603,207,0,0,0
+251,tetE,,0,ARG,Tetracycline,tetE,0,0,0,0,0,0,0,0,207,0.000603,206,0,0,0
+249,tetS,,0,ARG,Tetracycline,tetS,0,0,0,0,0,0,0,0,206,0.000603,205,0,0,0
+248,tetC,,0,ARG,Tetracycline,tetC,0,0,0,0,0,0,0,0,205,0.000603,204,0,0,0
+247,tetX,,0,ARG,Tetracycline,tetX,0,0,0,0,0,0,0,0,204,0.000603,203,0,0,0
+246,aac(6)-ir,,0,ARG,Aminoglycoside,aac(6)-ir,0,0,0,0,0,0,0,0,203,0.000603,202,0,0,0
+245,tetL,,0,ARG,Tetracycline,tetL,0,0,0,0,0,0,0,0,202,0.000603,201,0,0,0
+244,tetO,,0,ARG,Tetracycline,tetO,0,0,0,0,0,0,0,0,201,0.000603,200,0,0,0
+243,tetW,,0.000262,ARG,Tetracycline,tetW,0,0,0,0,0,0,0,0,200,0.000603,199,0,0,0
+242,tetH,,0,ARG,Tetracycline,tetH,0,0,0,0,0,0,0,0,199,0.000603,198,0,0,0
+241,tetQ,,0.000019,ARG,Tetracycline,tetQ,0,0,0,0,0,0,0,0,198,0.000603,197,0,0,0
+240,tetK,,0,ARG,Tetracycline,tetK,0,0,0,0,0,0,0,0,197,0.000603,196,0,0,0
+239,tetB,,0,ARG,Tetracycline,tetB,0,0,0,0,0,0,0,0,196,0.000603,195,0,0,0
+237,tetU,,0,ARG,Tetracycline,tetU,0,0,0,0,0,0,0,0,195,0.000603,194,0,0,0
+236,tet(32),,0,ARG,Tetracycline,tet(32),0,0,0,0,0,0,0,0,194,0.000603,193,0,0,0
+234,tet(36)_1,,0,ARG,Tetracycline,tet(36)_1,0,0,0,0,0,0,0,0,193,0.000603,192,0,0,0
+231,tet39,,0,ARG,Tetracycline,tet39,0,0,0,0,0,0,0,0,192,0.000603,191,0,0,0
+230,tetPB,,0.000003,ARG,Tetracycline,tetPB,0,0,0,0,0,0,0,0,191,0.000603,190,0,0,0
+229,tetD,,0.000009,ARG,Tetracycline,tetD,0,0,0,0,0,0,0,0,190,0.000603,189,0,0,0
+228,tet40,,0,ARG,Tetracycline,tet40,0,0,0,0,0,0,0,0,189,0.000603,188,0,0,0
+227,tetbP,,0,ARG,Tetracycline,tetbP,0,0,0,0,0,0,0,0,188,0.000603,187,0,0,0
+226,sulIII-marko,,0,ARG,Sulfonamide,sulIII-marko,0,0,0,0,0,0,0,0,187,0.000603,186,0,0,0
+223,aac(6)-II,,0,ARG,Aminoglycoside,aac(6)-II,0,0,0,0,0,0,0,0,186,0.000603,185,0,0,0
+220,strB,,0,ARG,Sulfonamide,strB,0,0,0,0,0,0,0,0,185,0.000603,184,0,0,0
+219,sul2,,0.000001,ARG,Sulfonamide,sul2,0,0,0,0,0,0,0,0,184,0.000603,183,0,0,0
+218,mcr-2,,0,ARG,Other,mcr-2,0,0,0,0,0,0,0,0,183,0.000603,182,0,0,0
+217,ARR-3,,0,ARG,Other,ARR-3,0,0,0,0,0,0,0,0,182,0.000603,181,0,0,0
+215,bacA_F,,0,ARG,Other,bacA_F,0,0,0,0,0,0,0,0,181,0.000603,180,0,0,0
+213,Arr2,,0,ARG,Other,Arr2,0,0,0,0,0,0,0,0,180,0.000603,179,0,0,0
+211,fosX,,0.000007,ARG,Other,fosX,0,0,0,0,0,0,0,0,179,0.000603,178,0,0,0
+210,fosb,,0,ARG,Other,fosb,0,0,0,0,0,0,0,0,178,0.000603,177,0,0,0
+208,nisB,,0.000031,ARG,Other,nisB,0,0,0,0,0,0,0,0,177,0.000603,176,0,0,0
+205,vatB,,0,ARG,MLSB,vatB,0,0,0,0,0,0,0,0,176,0.000603,175,0,0,0
+204,vga(A)LC,,0,ARG,MLSB,vga(A)LC,0,0,0,0,0,0,0,0,175,0.000603,174,0,0,0
+203,vgaA,,0.000009,ARG,MLSB,vgaA,0,0,0,0,0,0,0,0,174,0.000603,173,0,0,0
+202,msr(E),,0,ARG,MLSB,msr(E),0,0,0,0,0,0,0,0,173,0.000603,172,0,0,0
+200,msr(D),,0,ARG,MLSB,msr(D),0,0,0,0,0,0,0,0,172,0.000603,171,0,0,0
+199,mef(B),,0,ARG,MLSB,mef(B),0,0,0,0,0,0,0,0,171,0.000603,170,0,0,0
+198,lsa(C),,0,ARG,MLSB,lsa(C),0,0,0,0,0,0,0,0,170,0.000603,169,0,0,0
+197,lnu(F),,0,ARG,MLSB,lnu(F),0,0,0,0,0,0,0,0,169,0.000603,168,0,0,0
+196,erm(F),,0,ARG,MLSB,erm(F),0,0,0,0,0,0,0,0,168,0.000603,167,0,0,0
+195,erm(42),,0,ARG,MLSB,erm(42),0,0,0,0,0,0,0,0,167,0.000603,166,0,0,0
+194,erm(35),,0.000093,ARG,MLSB,erm(35),0,0,0,0,0,0,0,0,166,0.000603,165,0,0,0
+193,erm(34),,0,ARG,MLSB,erm(34),0,0,0,0,0,0,0,0,165,0.000603,164,0,0,0
+192,vat(A),,0.000018,ARG,MLSB,vat(A),0,0,0,0,0,0,0,0,164,0.000603,163,0,0,0
+190,Aac6-Aph2,,0,ARG,Aminoglycoside,Aac6-Aph2,0,0,0,0,0,0,0,0,163,0.000603,162,0,0,0
+189,lnuB,,0,ARG,MLSB,lnuB,0,0,0,0,0,0,0,0,162,0.000603,161,0,0,0
+185,erm(G),,0,ARG,MLSB,erm(G),0,0,0,0,0,0,0,0,161,0.000603,160,0,0,0
+183,erm(D),,0,ARG,MLSB,erm(D),0,0,0,0,0,0,0,0,160,0.000603,159,0,0,0
+181,erm(A),,0,ARG,MLSB,erm(A),0,0,0,0,0,0,0,0,159,0.000603,158,0,0,0
+180,ere(B),,0,ARG,MLSB,ere(B),0,0,0,0,0,0,0,0,158,0.000603,157,0,0,0
+179,aac(3)-xa_1,,0,ARG,Aminoglycoside,aac(3)-xa_1,0,0,0,0,0,0,0,0,157,0.000603,156,0,0,0
+177,ermZ/pikR1,,0,ARG,MLSB,ermZ/pikR1,0,0,0,0,0,0,0,0,156,0.000603,155,0,0,0
+176,carB,,0,ARG,MLSB,carB,0,0,0,0,0,0,0,0,155,0.000603,154,0,0,0
+175,oleC,,0,ARG,MLSB,oleC,0,0,0,0,0,0,0,0,154,0.000603,153,0,0,0
+174,ermA/ermTR,,0,ARG,MLSB,ermA/ermTR,0,0,0,0,0,0,0,0,153,0.000603,152,0,0,0
+173,cfr,,0,ARG,MLSB,cfr,0,0,0,0,0,0,0,0,152,0.000603,151,0,0,0
+171,ermY,,0,ARG,MLSB,ermY,0,0,0,0,0,0,0,0,151,0.000603,150,0,0,0
+170,vgbB,,0,ARG,MLSB,vgbB,0,0,0,0,0,0,0,0,150,0.000603,149,0,0,0
+169,vat(E),,0,ARG,MLSB,vat(E),0,0,0,0,0,0,0,0,149,0.000603,148,0,0,0
+167,lmrA,,0,ARG,MLSB,lmrA,0,0,0,0,0,0,0,0,148,0.000603,147,0,0,0
+163,vatC,,0,ARG,MLSB,vatC,0,0,0,0,0,0,0,0,147,0.000603,146,0,0,0
+162,ermX,,0.000014,ARG,MLSB,ermX,0,0,0,0,0,0,0,0,146,0.000603,145,0,0,0
+161,msr(A),,0.000001,ARG,MLSB,msr(A),0,0,0,0,0,0,0,0,145,0.000603,144,0,0,0
+159,msr(C),,0,ARG,MLSB,msr(C),0,0,0,0,0,0,0,0,144,0.000603,143,0,0,0
+158,ermT,,0,ARG,MLSB,ermT,0,0,0,0,0,0,0,0,143,0.000603,142,0,0,0
+157,aac(3)-id_ie,,0,ARG,Aminoglycoside,aac(3)-id_ie,0,0,0,0,0,0,0,0,142,0.000603,141,0,0,0
+156,erm(36),,0,ARG,MLSB,erm(36),0,0,0,0,0,0,0,0,141,0.000603,140,0,0,0
+155,vatD,,0,ARG,MLSB,vatD,0,0,0,0,0,0,0,0,140,0.000603,139,0,0,0
+154,ermK,,0.000028,ARG,MLSB,ermK,0,0,0,0,0,0,0,0,139,0.000603,138,0,0,0
+153,EAE_05855,,0,MGE,MGEs,EAE_05855,0,0,0,0,0,0,0,0,138,0.000603,137,0,0,0
+151,IS5/IS1182,,0,MGE,MGEs,IS5/IS1182,0,0,0,0,0,0,0,0,137,0.000603,136,0,0,0
+150,IS91,,0,MGE,MGEs,IS91,0,0,0,0,0,0,0,0,136,0.000603,135,0,0,0
+149,IncHI2-smr0018,,0,MGE,MGEs,IncHI2-smr0018,0,0,0,0,0,0,0,0,135,0.000603,134,0,0,0
+146,aac(3)-ib,,0.000001,ARG,Aminoglycoside,aac(3)-ib,0,0,0,0,0,0,0,0,134,0.000603,133,0,0,0
+145,IncN_korA,,0,MGE,MGEs,IncN_korA,0,0,0,0,0,0,0,0,133,0.000603,132,0,0,0
+144,IS15DI,,0,MGE,MGEs,IS15DI,0,0,0,0,0,0,0,0,132,0.000603,131,0,0,0
+143,IS6100,,0.000022,MGE,MGEs,IS6100,0,0,0,0,0,0,0,0,131,0.000603,130,0,0,0
+142,IS6/257,,0,MGE,MGEs,IS6/257,0,0,0,0,0,0,0,0,130,0.000603,129,0,0,0
+141,Tn3,,0,MGE,MGEs,Tn3,0,0,0,0,0,0,0,0,129,0.000603,128,0,0,0
+140,IS21-ISAs29,,0,MGE,MGEs,IS21-ISAs29,0,0,0,0,0,0,0,0,128,0.000603,127,0,0,0
+138,TN5403,,0,MGE,MGEs,TN5403,0,0,0,0,0,0,0,0,127,0.000603,126,0,0,0
+137,IS630,,0,MGE,MGEs,IS630,0,0,0,0,0,0,0,0,126,0.000603,125,0,0,0
+135,spec_aph,,0,ARG,Aminoglycoside,spec_aph,0,0,0,0,0,0,0,0,125,0.000603,124,0,0,0
+133,ISEcp1,,0.000149,MGE,MGEs,ISEcp1,0,0,0,0,0,0,0,0,124,0.000603,123,0,0,0
+132,IS256,,0,MGE,MGEs,IS256,0,0,0,0,0,0,0,0,123,0.000603,122,0,0,0
+131,IS3,,0,MGE,MGEs,IS3,0,0,0,0,0,0,0,0,122,0.000603,121,0,0,0
+130,IS26,,0,MGE,MGEs,IS26,0,0,0,0,0,0,0,0,121,0.000603,120,0,0,0
+129,ISCR1,,0,MGE,MGEs,ISCR1,0,0,0,0,0,0,0,0,120,0.000603,119,0,0,0
+127,tra-A,,0,MGE,MGEs,tra-A,0,0,0,0,0,0,0,0,119,0.000603,118,0,0,0
+126,traN,,0,MGE,MGEs,traN,0,0,0,0,0,0,0,0,118,0.000603,117,0,0,0
+123,intl3,,0.00038,MGE,MGEs,intl3,0,0,0,0,0,0,0,0,117,0.000603,116,0,0,0
+122,IS1133,,0,MGE,MGEs,IS1133,0,0,0,0,0,0,0,0,116,0.000603,115,0,0,0
+121,pBS228-IncP-1_,,0,MGE,MGEs,pBS228-IncP-1_,0,0,0,0,0,0,0,0,115,0.000603,114,0,0,0
+120,pAKD1-IncP-1_,,0,MGE,MGEs,pAKD1-IncP-1_,0,0,0,0,0,0,0,0,114,0.000603,113,0,0,0
+119,IS1111,,0.000135,MGE,MGEs,IS1111,0,0,0,0,0,0,0,0,113,0.000603,112,0,0,0
+118,ISEfm1-Entero,,0,MGE,MGEs,ISEfm1-Entero,0,0,0,0,0,0,0,0,112,0.000603,111,0,0,0
+117,ISAba3-Acineto,,0,MGE,MGEs,ISAba3-Acineto,0,0,0,0,0,0,0,0,111,0.000603,110,0,0,0
+113,ArmA,,0,ARG,Aminoglycoside,ArmA,0,0,0,0,0,0,0,0,110,0.000603,109,0,0,0
+110,trfa,,0,MGE,MGEs,trfa,0,0,0,0,0,0,0,0,109,0.000603,108,0,0,0
+109,IncQ_oriT,,0,MGE,MGEs,IncQ_oriT,0,0,0,0,0,0,0,0,108,0.000603,107,0,0,0
+108,IncP_oriT,,0.002083,MGE,MGEs,IncP_oriT,0,0,0,0,0,0,0,0,107,0.000603,106,0,0,0
+106,intl2,,0,MGE,MGEs,intl2,0,0,0,0,0,0,0,0,106,0.000603,105,0,0,0
+102,tnpA_5,,0,MGE,MGEs,tnpA_5,0,0,0,0,0,0,0,0,105,0.000603,104,0,0,0
+100,tnpA_4,,0,MGE,MGEs,tnpA_4,0,0,0,0,0,0,0,0,104,0.000603,103,0,0,0
+99,tnpA_3,,0.000002,MGE,MGEs,tnpA_3,0,0,0,0,0,0,0,0,103,0.000603,102,0,0,0
+97,tnpA_1,,0,MGE,MGEs,tnpA_1,0,0,0,0,0,0,0,0,102,0.000603,101,0,0,0
+96,IS613,,0,MGE,MGEs,IS613,0,0,0,0,0,0,0,0,101,0.000603,100,0,0,0
+95,Tp614,,0,MGE,MGEs,Tp614,0,0,0,0,0,0,0,0,100,0.000603,99,0,0,0
+94,adeI,,0,ARG,MDR,adeI,0,0,0,0,0,0,0,0,99,0.000603,98,0,0,0
+93,cadC,,0,ARG,MDR,cadC,0,0,0,0,0,0,0,0,98,0.000603,97,0,0,0
+92,pbrT,,0,ARG,MDR,pbrT,0,0,0,0,0,0,0,0,97,0.000603,96,0,0,0
+91,terW,,0,ARG,MDR,terW,0,0,0,0,0,0,0,0,96,0.000603,95,0,0,0
+90,aph3via,,0.000012,ARG,Aminoglycoside,aph3via,0,0,0,0,0,0,0,0,95,0.000603,94,0,0,0
+88,sugE,,0.000081,ARG,MDR,sugE,0,0,0,0,0,0,0,0,94,0.000603,93,0,0,0
+86,copA,,0,ARG,MDR,copA,0,0,0,0,0,0,0,0,93,0.000603,92,0,0,0
+83,qacF/H,,0,ARG,MDR,qacF/H,0,0,0,0,0,0,0,0,92,0.000603,91,0,0,0
+82,qacA/B,,0.000095,ARG,MDR,qacA/B,0,0,0,0,0,0,0,0,91,0.000603,90,0,0,0
+80,silE,,0,ARG,MDR,silE,0,0,0,0,0,0,0,0,90,0.000603,89,0,0,0
+79,aph4ib,,0.000033,ARG,Aminoglycoside,aph4ib,0,0,0,0,0,0,0,0,89,0.000603,88,0,0,0
+77,mdtg,,0,ARG,MDR,mdtg,0,0,0,0,0,0,0,0,88,0.000603,87,0,0,0
+76,cefa_qacEdelta,,0,ARG,MDR,cefa_qacEdelta,0,0,0,0,0,0,0,0,87,0.000603,86,0,0,0
+70,mexE,,0,ARG,MDR,mexE,0,0,0,0,0,0,0,0,86,0.000603,85,0,0,0
+69,mepA,,0,ARG,MDR,mepA,0,0,0,0,0,0,0,0,85,0.000603,84,0,0,0
+67,ttgA,,0.000004,ARG,MDR,ttgA,0,0,0,0,0,0,0,0,84,0.000603,83,0,0,0
+66,oprD,,0,ARG,MDR,oprD,0,0,0,0,0,0,0,0,83,0.000603,82,0,0,0
+62,mexA,,0,ARG,MDR,mexA,0,0,0,0,0,0,0,0,82,0.000603,81,0,0,0
+58,cmr,,0,ARG,MDR,cmr,0,0,0,0,0,0,0,0,81,0.000603,80,0,0,0
+57,strA,,0,ARG,Aminoglycoside,strA,0,0,0,0,0,0,0,0,80,0.000603,79,0,0,0
+56,Multidrug resistance protein,,0,ARG,MDR,Multidrug resistance protein,0,0,0,0,0,0,0,0,79,0.000603,78,0,0,0
+55,adeA,,0.000004,ARG,MDR,adeA,0,0,0,0,0,0,0,0,78,0.000603,77,0,0,0
+52,"qnrB46,47,48",,0,ARG,Fluoroquinolone,"qnrB46,47,48",0,0,0,0,0,0,0,0,77,0.000603,76,0,0,0
+51,oqxA,,0,ARG,Fluoroquinolone,oqxA,0,0,0,0,0,0,0,0,76,0.000603,75,0,0,0
+50,qnrS2,,0,ARG,Fluoroquinolone,qnrS2,0,0,0,0,0,0,0,0,75,0.000603,74,0,0,0
+48,QnrVC4_VC5_VC7,,0,ARG,Fluoroquinolone,QnrVC4_VC5_VC7,0,0,0,0,0,0,0,0,74,0.000603,73,0,0,0
+47,QnrVC1_VC3_VC6,,0,ARG,Fluoroquinolone,QnrVC1_VC3_VC6,0,0,0,0,0,0,0,0,73,0.000603,72,0,0,0
+46,str,,0,ARG,Aminoglycoside,str,0,0,0,0,0,0,0,0,72,0.000603,71,0,0,0
+45,QnrS1_S3_S5,,0,ARG,Fluoroquinolone,QnrS1_S3_S5,0,0,0,0,0,0,0,0,71,0.000603,70,0,0,0
+44,QnrB4,,0,ARG,Fluoroquinolone,QnrB4,0,0,0,0,0,0,0,0,70,0.000603,69,0,0,0
+42,norA,,0,ARG,Fluoroquinolone,norA,0,0,0,0,0,0,0,0,69,0.000603,68,0,0,0
+41,qnrB-bob_redesign,,0,ARG,Fluoroquinolone,qnrB-bob_redesign,0,0,0,0,0,0,0,0,68,0.000603,67,0,0,0
+40,qnrA,,0.002034,ARG,Fluoroquinolone,qnrA,0,0,0,0,0,0,0,0,67,0.000603,66,0,0,0
+39,bla-ACT,,0,ARG,Beta_Lactam,bla-ACT,0,0,0,0,0,0,0,0,66,0.000603,65,0,0,0
+38,KPC BOB,,0,ARG,Beta_Lactam,KPC BOB,0,0,0,0,0,0,0,0,65,0.000603,64,0,0,0
+37,blaPER,,0,ARG,Beta_Lactam,blaPER,0,0,0,0,0,0,0,0,64,0.000603,63,0,0,0
+36,blaTEM,,0,ARG,Beta_Lactam,blaTEM,0,0,0,0,0,0,0,0,63,0.000603,62,0,0,0
+34,blaIMIR,,0,ARG,Beta_Lactam,blaIMIR,0,0,0,0,0,0,0,0,62,0.000603,61,0,0,0
+33,blaOXA10,,0,ARG,Beta_Lactam,blaOXA10,0,0,0,0,0,0,0,0,61,0.000603,60,0,0,0
+31,blaIMI,,0,ARG,Beta_Lactam,blaIMI,0,0,0,0,0,0,0,0,60,0.000603,59,0,0,0
+29,nonmobile_blaADC,,0,ARG,Beta_Lactam,nonmobile_blaADC,0,0,0,0,0,0,0,0,59,0.000603,58,0,0,0
+28,blaFOXnew,,0,ARG,Beta_Lactam,blaFOXnew,0,0,0,0,0,0,0,0,58,0.000603,57,0,0,0
+27,blaMIR,,0,ARG,Beta_Lactam,blaMIR,0,0,0,0,0,0,0,0,57,0.000603,56,0,0,0
+26,blaHERA,,0,ARG,Beta_Lactam,blaHERA,0,0,0,0,0,0,0,0,56,0.000603,55,0,0,0
+24,aphA1,,0,ARG,Aminoglycoside,aphA1,0,0,0,0,0,0,0,0,55,0.000603,54,0,0,0
+23,blaCARB,,0,ARG,Beta_Lactam,blaCARB,0,0,0,0,0,0,0,0,54,0.000603,53,0,0,0
+22,bla-SME,,0,ARG,Beta_Lactam,bla-SME,0,0,0,0,0,0,0,0,53,0.000603,52,0,0,0
+21,blaOXY-1,,0.000234,ARG,Beta_Lactam,blaOXY-1,0,0,0,0,0,0,0,0,52,0.000603,51,0,0,0
+20,blaLEN,,0,ARG,Beta_Lactam,blaLEN,0,0,0,0,0,0,0,0,51,0.000603,50,0,0,0
+19,blaIND,,0,ARG,Beta_Lactam,blaIND,0,0,0,0,0,0,0,0,50,0.000603,49,0,0,0
+17,bl3_cpha,,0,ARG,Beta_Lactam,bl3_cpha,0,0,0,0,0,0,0,0,49,0.000603,48,0,0,0
+16,blaSHV-11,,0.000009,ARG,Beta_Lactam,blaSHV-11,0,0,0,0,0,0,0,0,48,0.000603,47,0,0,0
+15,"blaCTX-M-1,3,15",,0,ARG,Beta_Lactam,"blaCTX-M-1,3,15",0,0,0,0,0,0,0,0,47,0.000603,46,0,0,0
+14,bl1acc,,0,ARG,Beta_Lactam,bl1acc,0,0,0,0,0,0,0,0,46,0.000603,45,0,0,0
+13,aadA9,,0,ARG,Aminoglycoside,aadA9,0,0,0,0,0,0,0,0,45,0.000603,44,0,0,0
+12,cefa_ampc,,0,ARG,Beta_Lactam,cefa_ampc,0,0,0,0,0,0,0,0,44,0.000603,43,0,0,0
+10,NDM new,,0,ARG,Beta_Lactam,NDM new,0,0,0,0,0,0,0,0,43,0.000603,42,0,0,0
+8,penA,,0,ARG,Beta_Lactam,penA,0,0,0,0,0,0,0,0,42,0.000603,41,0,0,0
+7,blaCTX-M,,0,ARG,Beta_Lactam,blaCTX-M,0,0,0,0,0,0,0,0,41,0.000603,40,0,0,0
+6,mecA,,0,ARG,Beta_Lactam,mecA,0,0,0,0,0,0,0,0,40,0.000603,39,0,0,0
+5,pbp,,0,ARG,Beta_Lactam,pbp,0,0,0,0,0,0,0,0,39,0.000603,38,0,0,0
+4,Pbp5,,0,ARG,Beta_Lactam,Pbp5,0,0,0,0,0,0,0,0,38,0.000603,37,0,0,0
+3,blaVIM,,0,ARG,Beta_Lactam,blaVIM,0,0,0,0,0,0,0,0,37,0.000603,36,0,0,0
+2,aadD,,0.000001,ARG,Aminoglycoside,aadD,0,0,0,0,0,0,0,0,36,0.000603,35,0,0,0
+1,aacC2,,0,ARG,Aminoglycoside,aacC2,0,0,0,0,0,0,0,0,35,0.000603,34,0,0,0
+9,imp-marko,,0.000003,ARG,Beta_Lactam,imp-marko,1,1,1,1,1,0,0,0,34,0.004019,33,0,0,0.000861
+164,vgaB,,0.000001,ARG,MLSB,vgaB,1,1,1,1,1,0,0,0,34,0.004019,33,0,0,0.000861
+268,aac(6)-iv_ih,,0,ARG,Aminoglycoside,aac(6)-iv_ih,3,3,1,1,1,0,0,0,33,0.004019,32,1,3,0.004821
+293,vanRD,,0.000011,ARG,Vancomycin,vanRD,3,3,1,1,1,0,0,0,33,0.004019,32,1,3,0.004821
+306,vanSB,,0.000001,ARG,Vancomycin,vanSB,3,3,1,1,1,0,0,0,33,0.004019,32,1,3,0.004821
+300,vanYD,,0.000003,ARG,Vancomycin,vanYD,3,3,1,1,1,0,0,0,33,0.004019,32,1,3,0.004821
+224,aac(6)-ij,,0.000001,ARG,Aminoglycoside,aac(6)-ij,2,2,1,1,1,0,0,0,32,0.004019,18,1,1,0.002359
+522,Colidextribacter,,,Taxa,Taxa,Colidextribacter,2,2,1,1,1,0,0,0,32,0.004019,18,1,1,0.002359
+520,UCG-012,,,Taxa,Taxa,UCG-012,2,2,1,1,1,0,0,0,32,0.004019,18,1,1,0.002359
+301,aacA43,,0.001414,ARG,Aminoglycoside,aacA43,3,3,2,0.8,0.875,3,0,0,31,0.005836,19,0.333333,1,0.003664
+87,czcA,,0.017268,ARG,MDR,czcA,1,1,3,0.5,0.583333,0,0,0,31,0.002256,19,0,0,0.001468
+254,tetPA,,0.00387,ARG,Tetracycline,tetPA,2,2,2,0.666667,0.75,0,0,0,31,0.00391,19,1,1,0.002936
+128,trb-C,,0.003593,MGE,MGEs,trb-C,3,3,2,0.8,0.875,3,0,0,31,0.005836,19,0.333333,1,0.003664
+308,aadA7,,0.000081,ARG,Aminoglycoside,aadA7,1,1,3,0.5,0.583333,0,0,0,31,0.002256,19,0,0,0.001468
+63,nimE,,0.000004,ARG,MDR,nimE,1,1,1,1,1,0,0,0,30,0.004019,31,0,0,0.000861
+98,tnpA_2,,0.000042,MGE,MGEs,tnpA_2,1,1,1,1,1,0,0,0,30,0.004019,31,0,0,0.000861
+275,dfrAB4,,0.000001,ARG,Trimethoprim,dfrAB4,1,1,1,1,1,0,0,0,29,0.004019,30,0,0,0.000861
+252,tetT,,0.000001,ARG,Tetracycline,tetT,1,1,1,1,1,0,0,0,29,0.004019,30,0,0,0.000861
+528,Actinomyces,,,Taxa,Taxa,Actinomyces,16,16,1,1,1,0,0,0.245904,28,0.004019,7,1,120,1
+309,aphA3,,0.000069,ARG,Aminoglycoside,aphA3,16,16,1,1,1,0,0.023401,0.243677,28,0.004019,7,1,120,1
+549,Arcanobacterium,,,Taxa,Taxa,Arcanobacterium,16,16,1,1,1,0,0.04659,0.239243,28,0.004019,7,1,120,1
+343,catB2,,0.000019,ARG,Amphenicol,catB2,16,16,1,1,1,0,0.069358,0.232643,28,0.004019,7,1,120,1
+515,Corynebacterium,,,Taxa,Taxa,Corynebacterium,16,16,1,1,1,0,0.091497,0.223936,28,0.004019,7,1,120,1
+548,Empedobacter,,,Taxa,Taxa,Empedobacter,16,16,1,1,1,0,0.112808,0.213201,28,0.004019,7,1,120,1
+182,erm(B),,0.000294,ARG,MLSB,erm(B),16,16,1,1,1,0,0.133097,0.200535,28,0.004019,7,1,120,1
+186,erm(O),,0.000086,ARG,MLSB,erm(O),16,16,1,1,1,0,0.15218,0.186053,28,0.004019,7,1,120,1
+187,erm(Q),,0.00016,ARG,MLSB,erm(Q),16,16,1,1,1,0,0.169886,0.169886,28,0.004019,7,1,120,1
+487,Gallicola,,,Taxa,Taxa,Gallicola,16,16,1,1,1,0,0.186053,0.15218,28,0.004019,7,1,120,1
+485,Kocuria,,,Taxa,Taxa,Kocuria,16,16,1,1,1,0,0.200535,0.133097,28,0.004019,7,1,120,1
+209,pmrA,,0.000225,ARG,Other,pmrA,16,16,1,1,1,0,0.213201,0.112808,28,0.004019,7,1,120,1
+43,qepA_1_2,,0.000072,ARG,Fluoroquinolone,qepA_1_2,16,16,1,1,1,0,0.223936,0.091497,28,0.004019,7,1,120,1
+496,Rothia,,,Taxa,Taxa,Rothia,16,16,1,1,1,0,0.232643,0.069358,28,0.004019,7,1,120,1
+222,sulA/folP,,0.000396,ARG,Sulfonamide,sulA/folP,16,16,1,1,1,0,0.239243,0.04659,28,0.004019,7,1,120,1
+255,tetM,,0.000263,ARG,Tetracycline,tetM,16,16,1,1,1,0,0.243677,0.023401,28,0.004019,7,1,120,1
+103,tnpA_6,,0.000041,MGE,MGEs,tnpA_6,16,16,1,1,1,0,0.245904,0,28,0.004019,7,1,120,1
+336,cmx(A),,0.000017,ARG,Amphenicol,cmx(A),2,2,1,1,1,0,0,0,27,0.004019,23,1,1,0.002359
+115,ISPps1-pseud,,0.00006,MGE,MGEs,ISPps1-pseud,2,2,1,1,1,0,0,0,27,0.004019,23,1,1,0.002359
+225,sul1 NEW,,0.000024,ARG,Sulfonamide,sul1 NEW,2,2,1,1,1,0,0,0,27,0.004019,23,1,1,0.002359
+427,Acinetobacter,,,Taxa,Taxa,Acinetobacter,16,16,1,1,1,0,0,0.245904,26,0.004019,4,1,120,1
+519,Aeromonas,,,Taxa,Taxa,Aeromonas,16,16,1,1,1,0,0.023401,0.243677,26,0.004019,4,1,120,1
+489,Bifidobacterium,,,Taxa,Taxa,Bifidobacterium,16,16,1,1,1,0,0.04659,0.239243,26,0.004019,4,1,120,1
+507,Citrobacter,,,Taxa,Taxa,Citrobacter,16,16,1,1,1,0,0.069358,0.232643,26,0.004019,4,1,120,1
+540,Eionea,,,Taxa,Taxa,Eionea,16,16,1,1,1,0,0.091497,0.223936,26,0.004019,4,1,120,1
+461,Enterobacter,,,Taxa,Taxa,Enterobacter,16,16,1,1,1,0,0.112808,0.213201,26,0.004019,4,1,120,1
+486,Enterococcus,,,Taxa,Taxa,Enterococcus,16,16,1,1,1,0,0.133097,0.200535,26,0.004019,4,1,120,1
+458,Escherichia-Shigella,,,Taxa,Taxa,Escherichia-Shigella,16,16,1,1,1,0,0.15218,0.186053,26,0.004019,4,1,120,1
+537,Granulicatella,,,Taxa,Taxa,Granulicatella,16,16,1,1,1,0,0.169886,0.169886,26,0.004019,4,1,120,1
+539,Jeotgalibaca,,,Taxa,Taxa,Jeotgalibaca,16,16,1,1,1,0,0.186053,0.15218,26,0.004019,4,1,120,1
+449,Klebsiella,,,Taxa,Taxa,Klebsiella,16,16,1,1,1,0,0.200535,0.133097,26,0.004019,4,1,120,1
+526,Limosilactobacillus,,,Taxa,Taxa,Limosilactobacillus,16,16,1,1,1,0,0.213201,0.112808,26,0.004019,4,1,120,1
+166,lnuA,,0.000004,ARG,MLSB,lnuA,16,16,1,1,1,0,0.223936,0.091497,26,0.004019,4,1,120,1
+525,Pantoea,,,Taxa,Taxa,Pantoea,16,16,1,1,1,0,0.232643,0.069358,26,0.004019,4,1,120,1
+504,Serratia,,,Taxa,Taxa,Serratia,16,16,1,1,1,0,0.239243,0.04659,26,0.004019,4,1,120,1
+441,Staphylococcus,,,Taxa,Taxa,Staphylococcus,16,16,1,1,1,0,0.243677,0.023401,26,0.004019,4,1,120,1
+463,Streptococcus,,,Taxa,Taxa,Streptococcus,16,16,1,1,1,0,0.245904,0,26,0.004019,4,1,120,1
+560,Anaerostignum,,,Taxa,Taxa,Anaerostignum,2,2,2,0.75,0.833333,0,0,0,25,0.003953,27,1,1,0.002647
+494,Oscillibacter,,,Taxa,Taxa,Oscillibacter,3,3,1,1,1,2,0,0,25,0.005896,27,0.333333,1,0.003373
+514,Phocea,,,Taxa,Taxa,Phocea,1,1,2,0.6,0.666667,0,0,0,25,0.002273,27,0,0,0.001429
+506,Photobacterium,,,Taxa,Taxa,Photobacterium,2,2,2,0.75,0.833333,0,0,0,25,0.003953,27,1,1,0.002647
+558,Frisingicoccus,,,Taxa,Taxa,Frisingicoccus,1,1,1,1,1,0,0,0,24,0.004019,29,0,0,0.000861
+564,Peptostreptococcus,,,Taxa,Taxa,Peptostreptococcus,1,1,1,1,1,0,0,0,24,0.004019,29,0,0,0.000861
+25,blaGOB,,0.000009,ARG,Beta_Lactam,blaGOB,3,3,1,1,1,0,0,0,23,0.004019,24,1,3,0.004821
+147,lncF_FIC,,0.000001,MGE,MGEs,lncF_FIC,3,3,1,1,1,0,0,0,23,0.004019,24,1,3,0.004821
+561,Paenibacillus,,,Taxa,Taxa,Paenibacillus,3,3,1,1,1,0,0,0,23,0.004019,24,1,3,0.004821
+165,pica,,0.000002,ARG,MLSB,pica,3,3,1,1,1,0,0,0,23,0.004019,24,1,3,0.004821
+375,Cellulosilyticum,,19.93845,Taxa,Taxa,Cellulosilyticum,1,1,1,1,1,0,0,0,22,0.004019,28,0,0,0.000861
+431,Oscillospira,,,Taxa,Taxa,Oscillospira,1,1,1,1,1,0,0,0,22,0.004019,28,0,0,0.000861
+554,Clostridiisalibacter,,,Taxa,Taxa,Clostridiisalibacter,8,8,1,1,1,0.142857,0,0,21,0.00412,22,0.964286,27,0.052913
+172,erm(C),,0.000014,ARG,MLSB,erm(C),7,7,2,0.888889,0.9375,0,0,0,21,0.003667,22,1,21,0.047448
+527,Gottschalkia,,,Taxa,Taxa,Gottschalkia,8,8,1,1,1,0.142857,0,0,21,0.00412,22,0.964286,27,0.052913
+531,Halomonas,,,Taxa,Taxa,Halomonas,8,8,1,1,1,0.142857,0,0,21,0.00412,22,0.964286,27,0.052913
+553,Idiomarina,,,Taxa,Taxa,Idiomarina,8,8,1,1,1,0.142857,0,0,21,0.00412,22,0.964286,27,0.052913
+65,mtrE,,0.000026,ARG,MDR,mtrE,8,8,1,1,1,0.142857,0,0,21,0.00412,22,0.964286,27,0.052913
+557,Oceanimonas,,,Taxa,Taxa,Oceanimonas,8,8,1,1,1,0.142857,0,0,21,0.00412,22,0.964286,27,0.052913
+508,Psychrobacter,,,Taxa,Taxa,Psychrobacter,8,8,1,1,1,0.142857,0,0,21,0.00412,22,0.964286,27,0.052913
+477,Vibrio,,,Taxa,Taxa,Vibrio,7,7,2,0.888889,0.9375,0,0,0,21,0.003667,22,1,21,0.047448
+207,lnuC,,0.000003,ARG,MLSB,lnuC,3,3,1,1,1,0,0,0,20,0.004019,26,1,3,0.004821
+191,mphA,,0.000001,ARG,MLSB,mphA,3,3,1,1,1,0,0,0,20,0.004019,26,1,3,0.004821
+78,pcoA,,0.000001,ARG,MDR,pcoA,3,3,1,1,1,0,0,0,20,0.004019,26,1,3,0.004821
+49,qnrD,,0.000008,ARG,Fluoroquinolone,qnrD,3,3,1,1,1,0,0,0,20,0.004019,26,1,3,0.004821
+536,Clostridium sensu stricto 8,,,Taxa,Taxa,Clostridium sensu stricto 8,1,1,1,1,1,0,0,0,19,0.004019,25,0,0,0.000861
+73,merA-marko,,0.000002,ARG,MDR,merA-marko,1,1,1,1,1,0,0,0,19,0.004019,25,0,0,0.000861
+59,acrA,,0.000206,ARG,MDR,acrA,9,9,3,0.606061,0.708333,90.066667,0,0,18,0.005824,3,0.388889,14,0.052019
+53,acrB,,0.00022,ARG,MDR,acrB,1,1,4,0.384615,0.425,0,0,0,18,0.001153,3,0,0,0.006856
+54,acrF,,0.000244,ARG,MDR,acrF,4,4,3,0.526316,0.583333,10.933333,0,0,18,0.002858,3,0.666667,4,0.022891
+369,blaCMY,,0.00001,ARG,Beta_Lactam,blaCMY,9,9,4,0.526316,0.670833,9.833333,0,0,18,0.005093,3,0.805556,29,0.064105
+495,Desulfurispora,,,Taxa,Taxa,Desulfurispora,8,8,5,0.416667,0.5975,0.8,0,0,18,0.004541,3,0.892857,25,0.057985
+188,erm(S),,0.000008,ARG,MLSB,erm(S),7,7,5,0.408163,0.5725,0,0,0,18,0.004023,3,1,21,0.05352
+85,mdtA,,0.000119,ARG,MDR,mdtA,10,10,4,0.540541,0.695833,23.766667,0,0,18,0.005697,3,0.666667,30,0.067108
+61,mdtE/yhiU,,0.00049,ARG,MDR,mdtE/yhiU,3,3,4,0.454545,0.520833,0,0,0,18,0.002323,3,1,3,0.015396
+75,mdth,,0.000059,ARG,MDR,mdth,8,8,4,0.512821,0.645833,6.933333,0,0,18,0.004576,3,0.892857,25,0.059639
+81,arsA,,0.000007,ARG,MDR,arsA,1,1,6,0.298507,0.370833,0,0,0,18,0.001128,3,0,0,0.006874
+543,Odoribacter,,,Taxa,Taxa,Odoribacter,8,8,5,0.416667,0.5975,19,0,0,18,0.004946,3,0.75,21,0.054691
+114,orf39-IS26,,0.000008,MGE,MGEs,orf39-IS26,5,5,5,0.384615,0.514167,0,0,0,18,0.003012,3,1,10,0.039278
+545,Selenomonas,,,Taxa,Taxa,Selenomonas,9,9,4,0.526316,0.670833,9.833333,0,0,18,0.005093,3,0.805556,29,0.064105
+291,vanRC,,0,ARG,Vancomycin,vanRC,9,9,4,0.526316,0.670833,9.833333,0,0,18,0.005093,3,0.805556,29,0.064105
+323,acc3-iva,,0.000179,ARG,Aminoglycoside,acc3-iva,10,10,2,0.727273,0.8125,1.317857,0,0,17,0.004046,17,0.844444,38,0.17287
+348,cmlV,,0.00153,ARG,Amphenicol,cmlV,11,11,2,0.761905,0.84375,1.985714,0,0,17,0.004401,17,0.818182,45,0.187161
+60,emrD,,0.00207,ARG,MDR,emrD,15,15,2,0.941176,0.96875,13.597619,0,0,17,0.005972,17,0.619048,65,0.224845
+216,fabK,,0.001735,ARG,Other,fabK,8,8,2,0.666667,0.75,0.8,0,0,17,0.003344,17,0.857143,24,0.143214
+221,folA,,0.00203,ARG,Sulfonamide,folA,14,14,2,0.888889,0.9375,8.380952,0,0,17,0.005589,17,0.659341,60,0.21672
+105,int1-a-marko,,0.000096,MGE,MGEs,int1-a-marko,3,3,3,0.516129,0.572917,0,0,0,17,0.001633,17,1,3,0.054736
+111,intI1F165_clinical,,0.03176,MGE,MGEs,intI1F165_clinical,6,6,3,0.592593,0.677083,0.392857,0,0,17,0.002671,17,0.8,12,0.098163
+136,IS1247,,0.000081,MGE,MGEs,IS1247,13,13,2,0.842105,0.90625,3.664286,0,0,17,0.00512,17,0.75641,59,0.211966
+134,IS200_1,,0.0007,MGE,MGEs,IS200_1,9,9,2,0.695652,0.78125,2.333333,0,0,17,0.00379,17,0.833333,30,0.154344
+139,IS200_2,,0.001471,MGE,MGEs,IS200_2,3,3,3,0.533333,0.583333,0,0,0,17,0.001646,17,1,3,0.051198
+74,marR,,0.001297,ARG,MDR,marR,11,11,2,0.761905,0.84375,3.72619,0,0,17,0.004485,17,0.8,44,0.184301
+206,mefA,,0.000163,ARG,MLSB,mefA,13,13,2,0.842105,0.90625,3.314286,0,0,17,0.005131,17,0.74359,58,0.211867
+125,mobA,,0.00015,MGE,MGEs,mobA,10,10,2,0.727273,0.8125,2.991667,0,0,17,0.004133,17,0.822222,37,0.170169
+30,nonmobile blaBEL,,0.000038,ARG,Beta_Lactam,nonmobile blaBEL,8,8,2,0.666667,0.75,0.8,0,0,17,0.003348,17,0.857143,24,0.141954
+556,Rubrobacter,,,Taxa,Taxa,Rubrobacter,14,14,2,0.888889,0.9375,8.380952,0,0,17,0.005589,17,0.659341,60,0.21672
+521,Subdoligranulum,,,Taxa,Taxa,Subdoligranulum,5,5,2,0.592593,0.65625,0,0,0,17,0.002291,17,1,10,0.097958
+232,tetG_F,,0.000074,ARG,Tetracycline,tetG_F,13,13,2,0.842105,0.90625,3.314286,0,0,17,0.005131,17,0.74359,58,0.211867
+381,Bacteroides,,0.56642,Taxa,Taxa,Bacteroides,2,2,2,0.666667,0.75,0,0,0,16,0.003364,20,1,1,0.003327
+416,Desulfovibrio,,,Taxa,Taxa,Desulfovibrio,4,4,1,1,1,3.5,0,0,16,0.006528,20,0.333333,2,0.005141
+552,dgA-11 gut group,,,Taxa,Taxa,dgA-11 gut group,3,3,2,0.8,0.875,0.5,0,0,16,0.004849,20,0.666667,2,0.004376
+421,Parabacteroides,,,Taxa,Taxa,Parabacteroides,1,1,2,0.571429,0.625,0,0,0,16,0.00199,20,0,0,0.001771
+516,Rikenellaceae RC9 gut group,,,Taxa,Taxa,Rikenellaceae RC9 gut group,2,2,2,0.666667,0.75,0,0,0,16,0.003364,20,1,1,0.003327
+341,catA3,,0.000001,ARG,Amphenicol,catA3,1,1,1,1,1,0,0,0,15,0.004019,21,0,0,0.000861
+278,dfrK,,0,ARG,Trimethoprim,dfrK,1,1,1,1,1,0,0,0,15,0.004019,21,0,0,0.000861
+327,aac3-Via,,0.084567,ARG,Aminoglycoside,aac3-Via,9,9,1,1,1,0.5,0,0,14,0.004274,8,0.916667,33,0.071746
+385,Bilophila,,,Taxa,Taxa,Bilophila,9,9,1,1,1,0.5,0,0,14,0.004274,8,0.916667,33,0.071746
+344,catB9,,0.000063,ARG,Amphenicol,catB9,8,8,2,0.9,0.944444,0,0,0,14,0.003841,8,1,28,0.066276
+551,Desulfovermiculus,,,Taxa,Taxa,Desulfovermiculus,9,9,1,1,1,0.5,0,0,14,0.004274,8,0.916667,33,0.071746
+64,emrB/qacA,,0.000021,ARG,MDR,emrB/qacA,9,9,1,1,1,0.5,0,0,14,0.004274,8,0.916667,33,0.071746
+148,IncI1_repI1,,0.000155,MGE,MGEs,IncI1_repI1,8,8,2,0.9,0.944444,0,0,0,14,0.003841,8,1,28,0.066276
+542,Kluyvera,,,Taxa,Taxa,Kluyvera,9,9,1,1,1,0.5,0,0,14,0.004274,8,0.916667,33,0.071746
+160,mphB,,0.000009,ARG,MLSB,mphB,9,9,1,1,1,0.5,0,0,14,0.004274,8,0.916667,33,0.071746
+89,tcrB,,0.00001,ARG,MDR,tcrB,8,8,2,0.9,0.944444,0,0,0,14,0.003841,8,1,28,0.066276
+303,vanC2/vanC3,,0.007558,ARG,Vancomycin,vanC2/vanC3,6,6,2,0.75,0.833333,0,0,0,14,0.003025,8,1,15,0.050659
+235,aac(6)-im,,0.000033,ARG,Aminoglycoside,aac(6)-im,6,6,5,0.392157,0.535,3,0,0,13,0.004054,3,0.933333,14,0.024665
+152,cro,,0.000013,MGE,MGEs,cro,6,6,5,0.392157,0.535,3,0,0,13,0.004054,3,0.933333,14,0.024665
+116,ISSm2-Xanthob,,0.000016,MGE,MGEs,ISSm2-Xanthob,6,6,5,0.392157,0.535,3,0,0,13,0.004054,3,0.933333,14,0.024665
+71,mtrD,,0.000562,ARG,MDR,mtrD,5,5,6,0.30303,0.448333,0,0,0,13,0.003476,3,1,10,0.020165
+253,tet(36)_2,,0.000015,ARG,Tetracycline,tet(36)_2,6,6,5,0.392157,0.535,3,0,0,13,0.004054,3,0.933333,14,0.024665
+250,tetV,,0.000012,ARG,Tetracycline,tetV,6,6,5,0.392157,0.535,3,0,0,13,0.004054,3,0.933333,14,0.024665
+72,tolC,,0.000466,ARG,MDR,tolC,8,8,4,0.526316,0.654167,84,0,0,13,0.005291,3,0.464286,13,0.033034
+420,Clostridium sensu stricto 11,,0.06262,Taxa,Taxa,Clostridium sensu stricto 11,1,1,3,0.388889,0.452381,0,0,0,12,0.002028,16,0,0,0.001329
+391,Clostridium sensu stricto 13,,0.32926,Taxa,Taxa,Clostridium sensu stricto 13,2,2,2,0.583333,0.642857,6,0,0,12,0.003351,16,0,0,0.003672
+387,Clostridium sensu stricto 12,,0.4389,Taxa,Taxa,Clostridium sensu stricto 12,6,6,2,0.875,0.928571,14,0,0,12,0.007219,16,0.4,6,0.011534
+394,Clostridium sensu stricto 18,,0.31129,Taxa,Taxa,Clostridium sensu stricto 18,4,4,3,0.636364,0.761905,0,0,0,12,0.004482,16,1,6,0.009594
+436,Clostridium sensu stricto 19,,,Taxa,Taxa,Clostridium sensu stricto 19,4,4,3,0.636364,0.761905,0,0,0,12,0.004482,16,1,6,0.009594
+457,Hungateiclostridium,,,Taxa,Taxa,Hungateiclostridium,4,4,3,0.636364,0.761905,0,0,0,12,0.004482,16,1,6,0.009594
+446,Incertae Sedis,,,Taxa,Taxa,Incertae Sedis,4,4,3,0.636364,0.761905,0,0,0,12,0.004482,16,1,6,0.009594
+453,Proteiniclasticum,,,Taxa,Taxa,Proteiniclasticum,1,1,3,0.5,0.547619,0,0,0,12,0.001626,16,0,0,0.002757
+513,Cetobacterium,,,Taxa,Taxa,Cetobacterium,5,5,3,0.7,0.833333,0,0,0,11,0.003755,15,1,10,0.019154
+546,Chlamydia,,,Taxa,Taxa,Chlamydia,6,6,2,0.875,0.928571,0.4,0,0,11,0.004451,15,0.933333,14,0.022292
+535,Edwardsiella,,,Taxa,Taxa,Edwardsiella,6,6,2,0.875,0.928571,0.4,0,0,11,0.004451,15,0.933333,14,0.022292
+547,Erysipelatoclostridium,,,Taxa,Taxa,Erysipelatoclostridium,6,6,2,0.875,0.928571,0.4,0,0,11,0.004451,15,0.933333,14,0.022292
+350,floR,,0.000111,ARG,Amphenicol,floR,6,6,2,0.875,0.928571,0.4,0,0,11,0.004451,15,0.933333,14,0.022292
+399,Hespellia,,0.20873,Taxa,Taxa,Hespellia,6,6,2,0.875,0.928571,6,0,0,11,0.004852,15,0.666667,10,0.020307
+435,Pygmaiobacter,,,Taxa,Taxa,Pygmaiobacter,1,1,3,0.5,0.547619,0,0,0,11,0.00129,15,0,0,0.003614
+238,tetA,,0.000355,ARG,Tetracycline,tetA,6,6,2,0.875,0.928571,0.4,0,0,11,0.004451,15,0.933333,14,0.022292
+168,aac(3)-iid_iii_iif_iia_iie,,0.000011,ARG,Aminoglycoside,aac(3)-iid_iii_iif_iia_iie,2,2,1,1,1,0,0,0,10,0.004019,14,1,1,0.002359
+367,cfxA,,0.000002,ARG,Beta_Lactam,cfxA,2,2,1,1,1,0,0,0,10,0.004019,14,1,1,0.002359
+509,IheB3-7,,,Taxa,Taxa,IheB3-7,2,2,1,1,1,0,0,0,10,0.004019,14,1,1,0.002359
+371,blaGES,,0.000006,ARG,Beta_Lactam,blaGES,1,1,1,1,1,0,0,0,9,0.004019,13,0,0,0.000861
+468,Caloramator,,,Taxa,Taxa,Caloramator,1,1,1,1,1,0,0,0,9,0.004019,13,0,0,0.000861
+112,aacA/aphD,,0,ARG,Aminoglycoside,aacA/aphD,1,1,1,1,1,0,0,0,8,0.004019,12,0,0,0.000861
+529,Butyricicoccus,,,Taxa,Taxa,Butyricicoccus,1,1,1,1,1,0,0,0,8,0.004019,12,0,0,0.000861
+101,aph6ic,,0.000008,ARG,Aminoglycoside,aph6ic,3,3,1,1,1,0.5,0,0,7,0.004746,11,0.666667,2,0.004041
+362,blaOXY-2,,0.000016,ARG,Beta_Lactam,blaOXY-2,3,3,1,1,1,0.5,0,0,7,0.004746,11,0.666667,2,0.004041
+178,ere(A),,0.000018,ARG,MLSB,ere(A),2,2,2,0.75,0.833333,0,0,0,7,0.003292,11,1,1,0.003027
+233,tetR,,0.000178,ARG,Tetracycline,tetR,2,2,2,0.75,0.833333,0,0,0,7,0.003292,11,1,1,0.003027
+11,beta_ccra,,0.000023,ARG,Beta_Lactam,beta_ccra,3,3,1,1,1,0,0,0,6,0.004019,10,1,3,0.004821
+18,"blaB-11,13,14",,0.000006,ARG,Beta_Lactam,"blaB-11,13,14",3,3,1,1,1,0,0,0,6,0.004019,10,1,3,0.004821
+184,erm(E),,0.000004,ARG,MLSB,erm(E),3,3,1,1,1,0,0,0,6,0.004019,10,1,3,0.004821
+104,tnpA_7,,0.000008,MGE,MGEs,tnpA_7,3,3,1,1,1,0,0,0,6,0.004019,10,1,3,0.004821
+32,ampC,,0.000003,ARG,Beta_Lactam,ampC,2,2,1,1,1,0,0,0,5,0.004019,9,1,1,0.002359
+366,bla-L1,,0.000002,ARG,Beta_Lactam,bla-L1,2,2,1,1,1,0,0,0,5,0.004019,9,1,1,0.002359
+562,UCG-005,,,Taxa,Taxa,UCG-005,2,2,1,1,1,0,0,0,5,0.004019,9,1,1,0.002359
+212,aac(6)-iic,,0.000006,ARG,Aminoglycoside,aac(6)-iic,2,2,1,1,1,0,0,0,4,0.004019,6,1,1,0.002359
+322,aph_viii,,0.000002,ARG,Aminoglycoside,aph_viii,2,2,1,1,1,0,0,0,4,0.004019,6,1,1,0.002359
+282,vanD,,0.000006,ARG,Vancomycin,vanD,2,2,1,1,1,0,0,0,4,0.004019,6,1,1,0.002359
+407,[Eubacterium] ruminantium group,,0.13288,Taxa,Taxa,[Eubacterium] ruminantium group,2,2,2,0.625,0.7,0,0,0,3,0.003412,5,1,1,0.003633
+404,Agathobacter,,0.15674,Taxa,Taxa,Agathobacter,3,3,2,0.714286,0.8,0.5,0,0,3,0.00492,5,0.666667,2,0.004719
+401,[Ruminococcus] gnavus group,,,Taxa,Taxa,[Ruminococcus] gnavus group,2,2,2,0.625,0.7,0,0,0,3,0.003412,5,1,1,0.003633
+388,Roseburia,,0.36173,Taxa,Taxa,Roseburia,5,5,1,1,1,7.5,0,0,3,0.008332,5,0.2,2,0.006314
+414,Lachnospiraceae UCG-001,,0.09392,Taxa,Taxa,Lachnospiraceae UCG-001,1,1,2,0.555556,0.6,0,0,0,3,0.002018,5,0,0,0.002035
+403,Lachnospiraceae UCG-008,,0.16131,Taxa,Taxa,Lachnospiraceae UCG-008,1,1,2,0.555556,0.6,0,0,0,3,0.002018,5,0,0,0.002035
+68,aac3ia,,0.000003,ARG,Aminoglycoside,aac3ia,4,4,1,1,1,0,0,0,2,0.004019,2,1,6,0.008714
+563,Acetanaerobacterium,,,Taxa,Taxa,Acetanaerobacterium,4,4,1,1,1,0,0,0,2,0.004019,2,1,6,0.008714
+84,bexA/norM,,0.000206,ARG,MDR,bexA/norM,4,4,1,1,1,0,0,0,2,0.004019,2,1,6,0.008714
+530,Brevinema,,,Taxa,Taxa,Brevinema,4,4,1,1,1,0,0,0,2,0.004019,2,1,6,0.008714
+559,Prevotellaceae NK3B31 group,,,Taxa,Taxa,Prevotellaceae NK3B31 group,4,4,1,1,1,0,0,0,2,0.004019,2,1,6,0.008714
+532,[Eubacterium] oxidoreducens group,,,Taxa,Taxa,[Eubacterium] oxidoreducens group,1,1,2,0.6,0.666667,0,0,0,1,0.002273,1,0,0,0.001429
+35,aadE,,0.00001,ARG,Aminoglycoside,aadE,3,3,1,1,1,2,0,0,1,0.005896,1,0.333333,1,0.003373
+321,apmA,,0.000033,ARG,Aminoglycoside,apmA,2,2,2,0.75,0.833333,0,0,0,1,0.003953,1,1,1,0.002647
+107,IncN_rep,,0.00004,MGE,MGEs,IncN_rep,2,2,2,0.75,0.833333,0,0,0,1,0.003953,1,1,1,0.002647
+201,aac(6)-ig,,0.000047,ARG,Aminoglycoside,aac(6)-ig,3,3,1,1,1,0,0,0,0,0.004019,0,1,3,0.004821
+257,aac(6)-is_iu_ix,,0.000111,ARG,Aminoglycoside,aac(6)-is_iu_ix,3,3,1,1,1,0,0,0,0,0.004019,0,1,3,0.004821
+214,mcr-1,,0.000272,ARG,Other,mcr-1,3,3,1,1,1,0,0,0,0,0.004019,0,1,3,0.004821
+124,spcN,,0.000169,ARG,Aminoglycoside,spcN,3,3,1,1,1,0,0,0,0,0.004019,0,1,3,0.004821
