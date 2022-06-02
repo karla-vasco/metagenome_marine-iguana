@@ -1,0 +1,495 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#Libraries
+```{r}
+library("phyloseq")
+library("ggplot2")
+library("gridExtra")
+library("ggpubr")
+library("ggsignif")
+library(forcats)
+library(vegan)
+library(cowplot)
+```
+
+#Physeq object
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/resistome_smartchip/phyloseq")
+
+#read in otu table
+otu_table = read.table("feature-table.txt",sep="\t",row.names = 1,header = TRUE)
+otu_table=as.matrix(otu_table,rownames=TRUE)
+otu_table <- otu_table*10^9
+#otu_table[otu_table >0]<-1
+mode(otu_table) <- "integer"
+
+
+#read in taxonomy
+taxonomy = read.csv("taxonomy.tsv",sep="\t",row.names=1)
+taxonomy=as.matrix(taxonomy)
+
+#read in metadata
+metadata=read.table("metadata_marine-iguana_2021-04-08.csv", sep = ",", header = TRUE, row.names=1, na.strings = "") 
+metadata
+
+#import as phyloseq objects
+OTU = otu_table(otu_table,taxa_are_rows=TRUE)
+TAX = tax_table(taxonomy)
+META = sample_data(metadata)
+
+# Sanity checks for consistent OTU names
+taxa_names(TAX)
+taxa_names(OTU)
+
+# Same sample names
+sample_names(OTU)
+sample_names(META)
+
+#(tree was already imported as a phyloseq object)
+physeq=phyloseq(OTU,TAX,META)
+```
+
+#Alpha diversity
+```{r fig.width=10, fig.height=40}
+alpha_diversity <- estimate_richness(physeq, measures = c("Shannon", "Observed"))
+df_alpha <- data.frame(alpha_diversity, sample_data(physeq))
+df <- reshape2::melt(df_alpha, measure.var=c("Shannon","Observed"),id.vars=c("location","island"))
+df$value = as.numeric(df$value)
+
+#selecting the rows corresponding to each index from the main dataframe
+shannon = dplyr::filter(df, variable == "Shannon")
+observed = dplyr::filter(df, variable == "Observed")
+```
+
+#Alpha diversity gut plot
+```{r fig.width=5, fig.height=5}
+library(ggsci)
+
+my_comparisons <- list(c("Cabo Douglas", "Punta Espinoza"), c("Punta Espinoza", "Rabida"), c("Cabo Douglas", "Rabida"))
+
+##################### Running box plot #############################
+
+shannon_plot <- shannon %>%
+  ggplot(aes(x = location, y = value, fill = location)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(color="black", size=1, alpha=0.5) +
+  labs(y="Shannon", x="Location") +
+  annotate("text", x = 2, y = 3.2, label = "Kruskal-Wallis, p = 0.73", colour = "black") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + 
+  theme_classic() + 
+  theme(legend.position = "none",axis.title.x=element_blank()) + 
+  stat_compare_means(comparisons = my_comparisons, label.y = c(2.3,2.5,2.7), tip.length=.02, hide.ns = F) +
+   scale_fill_aaas()
+shannon_plot
+
+observed_plot <- observed %>% 
+  ggplot(aes(x = location, y = value, fill = location)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(color="black", size=1, alpha=0.5) +
+  labs(y="Observed", x="Location") +
+ annotate("text", x = 2, y = 50, label = "Kruskal-Wallis, p = 0.17", colour = "black") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + 
+  theme_classic() + 
+  theme(legend.position = "none",axis.title.x=element_blank()) + 
+ stat_compare_means(comparisons = my_comparisons, label.y = c(40,42,44), tip.length=.02, hide.ns = F) +
+   scale_fill_aaas()
+observed_plot
+```
+
+#BETA DIVERSITY
+#Bray-Curtis statistics
+```{r}
+## PERMANOVA
+library(vegan)
+bray_dist = phyloseq::distance(physeq, method="bray") #RUN this only once because it takes a lot of time
+adonis_bray = adonis(bray_dist ~ sample_data(physeq)$location)
+adonis_bray
+
+## Significant PERMANOVA indicates that centroid (or spatial median) among groups is different and/or with-group dispersion among groups is different
+
+## PERMDISP
+bray_disp <-betadisper(bray_dist, sample_data(physeq)$location, type=c("median"))
+anova(bray_disp)
+
+
+## If PERMANOVA and PERMDISP are both significant, you can use plotting to tell if PERMANOVA was significant based on centroid (or spatial median)
+plot(bray_disp)
+#?plot.betadisper
+
+## Would look better with higher replication for groups
+plot(bray_disp, label = F)
+
+## Plot with 1 standard deviation ellipses around the group medians
+## sample size issue here, but you get the idea
+plot(bray_disp, label = F, hull = F, ellipse = T)
+
+## Within-group dispersion that PERMDISP is testing
+boxplot(bray_disp, las = 2, cex.lab=1.5)
+?boxplot
+
+## pairwise p-values
+TukeyHSD(bray_disp)
+
+scores(bray_disp, 1:4, display = "centroids")
+
+```
+
+##Bray-Curtis dissimilarity plot
+```{r}
+beta_bray <- ordinate(physeq, "PCoA", "bray") #RUN this only ONCE because it takes a lot of time
+beta_bray_plot = plot_ordination(physeq, beta_bray, type="location", color="location", shape="location", title="PCoA Weighted Unifrac") + stat_ellipse(type = "t", linetype = 3) + stat_ellipse(type = "t") + theme_bw()+labs(colour = "location") #To add arrows https://neavemj.github.io/posts/coralMicrobiome
+beta_bray_plot
+```
+
+##Bray-Curtis dissimilarity final PCoA
+```{r}
+label_perm <- expression(paste("PERMANOVA, ",R^2 ,"= 0.08, ", paste(italic('p')),"=0.001"))
+#library(lemon)
+
+beta_scatter = as.data.frame(beta_bray[["vectors"]])
+beta_meta = merge(beta_scatter,metadata,by = 0,all=F)
+pmain_brayF = ggscatter(beta_meta, x = "Axis.1", y = "Axis.2", color = "location", palette = "aaas",ellipse = TRUE, ellipse.level=.5,mean.point = F, mean.point.size = 5, star.plot = F) +labs(x = "PCoA 1 (24.8%) ", y = "PCoA 2 (15.8%)", colour = "Location", fill = "Location")+ annotate("text", x = -0.2, y = 0.4, label = label_perm, colour = "black")
+pmain_brayF
+#pmain_wuF = reposition_legend(pmain_wuF,'top left')
+```
+
+#Arranging alpha and beta diversity plots into one
+```{r fig.width=15, fig.height=5}
+diversity = ggarrange(shannon_plot, observed_plot, pmain_brayF, nrow = 1, ncol = 3, widths = c(1,1,2), labels = c("A","B","C"))
+diversity
+```
+
+#Saving plot
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/resistome")
+ggsave("smartchip_diversity.png", plot = diversity, width = 15, height = 5)
+```
+
+#Drug-class data frame
+```{r}
+glom_class <- tax_glom(physeq, taxrank = 'Class')
+#glom_class_rel = transform_sample_counts(glom_class, function(x) x/sum(x))
+data_class <- psmelt(glom_class) # create dataframe from phyloseq object
+data_class_rel = data_class %>% group_by(Sample) %>% mutate(norm_ab = Abundance / 10^9) #Converting counts to relative abundance %
+
+```
+
+#Barplot by drug class
+```{r fig.width=15, fig.height=5}
+sample_names <- sort(unique(data_class$Sample))
+
+sample_ab <- ggbarplot(data=data_class_rel, x= "Sample", y = "Abundance", color = "Class", fill = "Class", palette = get_palette("simpsons",12), ylab = "Relative Abundance", label.pos="out", order=sample_names, legend = "right", position = position_fill()) + facet_wrap(~location, scales = "free_x") + theme(axis.text.x = element_text(angle = 90))   # theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(), legend.position = "right")
+sample_ab
+```
+
+#Saving barplot figure as a PNG
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/resistome")
+ggsave("smartchip_class_barplot.png", plot = sample_ab, width = 15, height = 5)
+```
+
+##Gene data frame (ARG or MGE)
+```{r}
+glom_gene <- tax_glom(physeq, taxrank = 'Gene')
+
+#Selecting the top 10 most abundant genes
+top10 <- names(sort(taxa_sums(glom_gene), decreasing=TRUE)[1:10])
+top10 
+
+glom_gene_rel = transform_sample_counts(glom_gene, function(x) x/sum(x))
+
+gene_top10 = prune_taxa(top10, glom_gene_rel)
+data_gene <- psmelt(gene_top10)
+```
+
+#Barplot of the top 10 most abundant genes
+```{r fig.width=20, fig.height=5}
+sample_names <- sort(unique(data_gene$Sample))
+
+gene_ab <- ggbarplot(data=data_gene, x= "Sample", y = "Abundance", color = "Gene", fill = "Gene", palette = get_palette("lancet",10), ylab = "Relative Abundance", order = sample_names) +labs(colour = "Gene", fill = "Gene") + facet_wrap(~location, scales = "free_x") + theme(axis.text.x = element_text(angle = 90)) +  theme(legend.text = element_text(face = "italic"))
+
+gene_ab
+```
+
+#Saving gene barplot as a PNG
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/resistome")
+ggsave("smartchip_top10gene_barplot.png", plot = gene_ab, width = 15, height = 5)
+```
+
+##ANCOMBC Class
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq, "Class")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "island",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "island", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "island")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/resistome_smartchip/ancom/ANCOM_class_island.csv",sep = ",", row.names = F)
+```
+
+##Filtering samples per two sites
+```{r}
+physeq_CD_RA <- subset_samples(physeq, location%in%c("Cabo Douglas", "Rabida"))
+physeq_CD_PE <- subset_samples(physeq, location%in%c("Cabo Douglas", "Punta Espinoza"))
+physeq_RA_PE <- subset_samples(physeq, location%in%c("Punta Espinoza", "Rabida"))
+```
+
+#ANCOM CD PE
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_PE, "Class")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/resistome_smartchip/ancom/ANCOM_class_CD_PE.csv",sep = ",", row.names = F)
+```
+
+#ANCOM CD RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_RA, "Class")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/resistome_smartchip/ancom/ANCOM_class_CD_RA.csv",sep = ",", row.names = F)
+```
+
+#ANCOM PE RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_RA_PE, "Class")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/resistome_smartchip/ancom/ANCOM_class_RA_PE.csv",sep = ",", row.names = F)
+```
+
+##ANCOMBC Gene
+```{r}
+physeq=phyloseq(OTU,TAX,META)
+```
+
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq, "Gene")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "island",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "island", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "island")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/resistome_smartchip/ancom/ANCOM_Gene_island.csv",sep = ",", row.names = F)
+```
+
+##Filtering samples per two sites
+```{r}
+physeq_CD_RA <- subset_samples(physeq, location%in%c("Cabo Douglas", "Rabida"))
+physeq_CD_PE <- subset_samples(physeq, location%in%c("Cabo Douglas", "Punta Espinoza"))
+physeq_RA_PE <- subset_samples(physeq, location%in%c("Punta Espinoza", "Rabida"))
+```
+
+#ANCOM CD PE
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_PE, "Gene")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/resistome_smartchip/ancom/ANCOM_Gene_CD_PE.csv",sep = ",", row.names = F)
+```
+
+#ANCOM CD RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_RA, "Gene")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/resistome_smartchip/ancom/ANCOM_Gene_CD_RA.csv",sep = ",", row.names = F)
+```
+
+#ANCOM PE RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_RA_PE, "Gene")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/resistome_smartchip/ancom/ANCOM_Gene_RA_PE.csv",sep = ",", row.names = F)
+```
