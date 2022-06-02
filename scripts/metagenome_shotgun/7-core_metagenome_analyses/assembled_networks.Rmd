@@ -1,0 +1,323 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#Importing tables
+```{r}
+library(readxl)
+library(tibble)
+library(dplyr)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun")
+
+metadata <- read_excel("contigs_iguanas_tables.xlsx", sheet = "metadata") 
+
+deepARG <- read_excel("contigs_iguanas_tables.xlsx", sheet = "deepARG") %>% 
+  mutate(Type = "ARG", Superclass = deepARG_Class, OTU = deepARG_ARG) %>% 
+  rename(Gene = deepARG_ARG, Class = deepARG_Class, Counts = deepARG_counts) %>%
+  select(sample_id, OTU, Type, Superclass, Class, Gene, Counts)
+
+mobileOG <- read_excel("contigs_iguanas_tables.xlsx", sheet = "mobileOG") %>% 
+  mutate(Type = "MGE") %>% 
+  unite(OTU, MGE_Type, MGE_Gene, sep = "-", remove = F) %>% 
+  rename(Class = MGE_Gene, Superclass = MGE_Type, Counts = MGE_count)%>%
+  mutate(Gene = OTU) %>% 
+  select(sample_id, OTU, Type, Superclass, Class, Gene, Counts)
+
+VFDB <- read_excel("contigs_iguanas_tables.xlsx", sheet = "VFDB") %>% 
+  mutate(Type = "Virulence", OTU = VFDB_Gene, Class = VFDB_Mechanism) %>% 
+  rename(Gene = VFDB_Gene, Superclass = VFDB_Mechanism, Counts = VFDB_Count) %>%
+  select(sample_id, OTU, Type, Superclass, Class, Gene, Counts)
+
+kraken_genus <- read_excel("contigs_iguanas_tables.xlsx", sheet = "kraken_genus") %>% 
+  mutate(Type = "Taxa", OTU = Genus, Class = Genus, Superclass = Genus) %>% 
+  rename(Gene = Genus, Counts = reads) %>%
+  select(sample_id, OTU, Type, Superclass, Class, Gene, Counts)
+```
+
+```{r}
+abundance_tables <- union(deepARG, mobileOG) %>% 
+  union(VFDB) %>% 
+  union(kraken_genus)
+metadata_genes <- merge(abundance_tables, metadata)
+```
+
+#OTU table normalized by the number of Bacterial reads
+```{r}
+norm_abundance <- metadata_genes %>% 
+  select(sample_id, OTU, Counts, Bacteria_bracken) %>% 
+  group_by(sample_id, OTU) %>% 
+  summarise(norm.abundance = sum(Counts/Bacteria_bracken*100)) %>% 
+  as.data.frame()
+
+library(tidyr)
+norm.mx <-spread(norm_abundance, key = sample_id, value = norm.abundance) %>%  tibble::remove_rownames() %>%  tibble::column_to_rownames("OTU")
+  
+norm.mx[is.na(norm.mx)] = 0
+norm.mx=as.matrix(norm.mx,rownames=T)
+norm.mx <- norm.mx*10^10
+```
+#OTU table not normalized
+```{r}
+abundance <- metadata_genes %>% 
+  select(sample_id, OTU, Counts, Bacteria_bracken) %>% 
+  group_by(sample_id, OTU) %>% 
+  summarise(abundance = sum(Counts)) %>% 
+  as.data.frame()
+
+library(tidyr)
+mx <-spread(abundance, key = sample_id, value = abundance) %>%  tibble::remove_rownames() %>%  tibble::column_to_rownames("OTU")
+  
+mx[is.na(mx)] = 0
+mx=as.matrix(mx,rownames=T)
+```
+
+#Making taxonomy table
+```{r}
+taxonomy <- abundance_tables %>% select(OTU, Type, Superclass, Class, Gene) %>% 
+  distinct() %>% #Remove duplicate rows
+  arrange(OTU) %>% #organize names alphabetically
+  tibble::remove_rownames() %>%  tibble::column_to_rownames("OTU")
+taxonomy=as.matrix(taxonomy,rownames=TRUE)
+```
+
+#Phyloseq object
+```{r}
+library(phyloseq)
+#import as phyloseq objects
+OTU = otu_table(norm.mx,taxa_are_rows=T)
+TAX = tax_table(taxonomy)
+META = metadata %>% tibble::remove_rownames() %>% tibble::column_to_rownames("sample_id") %>% sample_data()
+
+# Sanity checks for consistent OTU names
+#taxa_names(TAX)
+#taxa_names(OTU)
+
+# Same sample names
+#sample_names(OTU)
+#sample_names(META)
+
+#(tree was already imported as a phyloseq object)
+physeq=phyloseq(OTU,TAX,META)
+```
+
+#Aggregate by Type
+```{r}
+physeq_superclass <- tax_glom(physeq, taxrank = "Superclass")
+superclass_df <- psmelt(physeq_superclass)
+```
+
+#Making a nodes file for Gephi
+```{r}
+nodes_ids <- superclass_df %>% 
+  select(Type, Superclass) %>% 
+  distinct()
+
+#Adding id numbers required for Gephi (corresponding to node id)
+nodes <- nodes_ids %>% 
+  mutate(id = 1:nrow(nodes_ids)) %>% #Number correspond to nrow(smartchip_nodes)
+  mutate(Label = Superclass) %>% #Changing name of column Gene for Label, which is going to be the label observed in the network
+  select(Label, id, Type) #Reordering columns
+
+library(readr)
+#Saving final file as csv
+write_csv(nodes, "/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/network_nodes_assembled_superclass_taxa.csv")
+```
+
+#Making an edges file for Gephi
+```{r}
+#Making a matrix with only the abundances of each gene (genes are columns, abundances are rows)
+abundance_edges <- superclass_df %>% 
+  select(Sample,Abundance, Superclass) %>% 
+  spread(key = Superclass, value = Abundance) %>%  tibble::remove_rownames() %>%  tibble::column_to_rownames("Sample")
+  
+abundance_edges[is.na(abundance_edges)] = 0#replacing NAs with 0 to correctly calculate correlations
+abundance_edges=as.matrix(abundance_edges,rownames=T)
+abundance_edges <- abundance_edges/10^10
+
+
+library(Hmisc)
+#Calculating correlations
+correlations <-rcorr(as.matrix(abundance_edges))
+
+#Making a function to change th matrix to a long format
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+
+#Making an edges table for Gephi
+edges = flattenCorrMatrix(correlations$r, correlations$P)
+
+#Renaming columns, adding correlation type, and filtering correlations higher than 0.75
+edges <- edges %>% 
+  dplyr::rename(Label = row, Target = column, Correlation = cor) %>% 
+  mutate(Type = "undirected") %>% 
+  filter(Correlation >= 0.75)
+
+#Changing labels for id numbers (corresponding to node id)
+edges_num <- left_join(edges, nodes, by = "Label") %>%
+  dplyr::rename(Source = id) %>% 
+  select(Source, Target, Correlation, Type.x, Type.y) %>% 
+  dplyr::rename(Label = Target, Type_source = Type.y)
+
+`%notin%` <- Negate(`%in%`)
+
+edges_num2 <- left_join(edges_num,nodes, by = "Label") %>% 
+  select(Source, id, Correlation, Type_source, Type.x, Type) %>% 
+  dplyr::rename(Target = id, Type = Type.x, Type_target = Type) %>% 
+  unite(combined, Type_source, Type_target, sep = "-") %>% 
+  filter(combined %notin% "Taxa-Taxa") %>% 
+  select(Source, Target, Type)
+
+#Saving edges file as csv
+write_csv(edges, "/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/edges_superclass_labels_75_assembled_taxa.csv")
+
+write_csv(edges_num2, "/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/edges_superclass_75_assembled_taxa.csv")
+```
+
+#Aggregate by Gene
+```{r}
+gene_df <- psmelt(physeq)
+```
+
+#Making a nodes file for Gephi
+```{r}
+nodes_ids <- gene_df %>% 
+  select(Type, Superclass, Class, Gene) %>% 
+  distinct()
+
+#Adding id numbers required for Gephi (corresponding to node id)
+nodes <- nodes_ids %>% 
+  mutate(id = 1:nrow(nodes_ids)) %>% #Number correspond to nrow(smartchip_nodes)
+  mutate(Label = Gene) %>% #Changing name of column Gene for Label, which is going to be the label observed in the network
+  select(Label, id, Type, everything()) #Reordering columns
+
+library(readr)
+#Saving final file as csv
+write_csv(nodes, "/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/network_nodes_assembled_gene_taxa.csv")
+```
+
+#Making an edges file for Gephi
+```{r}
+#Making a matrix with only the abundances of each gene (genes are columns, abundances are rows)
+abundance_edges <- gene_df %>% 
+  select(Sample, Abundance, Gene) %>% 
+  spread(key = Gene, value = Abundance) %>%  tibble::remove_rownames() %>%  tibble::column_to_rownames("Sample")
+  
+abundance_edges[is.na(abundance_edges)] = 0#replacing NAs with 0 to correctly calculate correlations
+abundance_edges=as.matrix(abundance_edges,rownames=T)
+abundance_edges <- abundance_edges/10^10
+
+
+library(Hmisc)
+#Calculating correlations
+correlations <-rcorr(as.matrix(abundance_edges))
+
+#Making a function to change th matrix to a long format
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+
+#Making an edges table for Gephi
+edges = flattenCorrMatrix(correlations$r, correlations$P)
+
+#Renaming columns, adding correlation type, and filtering correlations higher than 0.75
+edges <- edges %>% 
+  dplyr::rename(Label = row, Target = column, Correlation = cor) %>% 
+  mutate(Type = "undirected") %>% 
+  filter(Correlation >= 0.75)
+
+#Changing labels for id numbers (corresponding to node id)
+edges_num <- left_join(edges, nodes, by = "Label") %>%
+  dplyr::rename(Source = id) %>% 
+  select(Source, Target, Correlation, Type.x, Type.y) %>% 
+  dplyr::rename(Label = Target, Type_source = Type.y)
+
+`%notin%` <- Negate(`%in%`)
+
+edges_num2 <- left_join(edges_num,nodes, by = "Label") %>% 
+  select(Source, id, Correlation, Type_source, Type.x, Type) %>% 
+  dplyr::rename(Target = id, Type = Type.x, Type_target = Type) %>% 
+  unite(combined, Type_source, Type_target, sep = "-") %>% 
+  filter(combined %notin% "Taxa-Taxa") %>% 
+  select(Source, Target, Type)
+
+#Saving edges file as csv
+write_csv(edges, "/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/edges_gene_labels_75_assembled_taxa.csv")
+
+write_csv(edges_num2, "/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/edges_gene_75_assembled_taxa.csv")
+```
+
+```{r}
+#Making a matrix with only the abundances of each gene (genes are columns, abundances are rows)
+abundance_edges <- gene_df %>% as_tibble() %>% 
+  select(Sample, Abundance, Gene) %>% 
+  pivot_wider(id_cols = Sample, 
+            names_from = Gene, 
+            values_from = Abundance)  %>%  
+  tibble::remove_rownames() %>%  tibble::column_to_rownames("Sample") %>% 
+  as_tibble()
+  
+abundance_edges[is.na(abundance_edges)] = 0#replacing NAs with 0 to correctly calculate correlations
+abundance_edges=as.matrix()
+abundance_edges <- abundance_edges/10^10
+
+
+library(Hmisc)
+#Calculating correlations
+correlations <-rcorr(as.matrix(abundance_edges))
+
+#Making a function to change th matrix to a long format
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+
+#Making an edges table for Gephi
+edges = flattenCorrMatrix(correlations$r, correlations$P)
+
+#Renaming columns, adding correlation type, and filtering correlations higher than 0.75
+edges <- edges %>% 
+  dplyr::rename(Label = row, Target = column, Correlation = cor) %>% 
+  mutate(Type = "undirected") %>% 
+  filter(Correlation >= 0.75)
+
+edges <- edges %>% 
+  dplyr::rename(Label = row, Target = column, Correlation = cor) %>% 
+  mutate(Type = "undirected",
+  name = paste(round, experiment, sep = "_")
+)) %>% 
+  filter(Correlation >= 0.75)
+
+#Changing labels for id numbers (corresponding to node id)
+edges_num <- left_join(edges, nodes, by = "Label") %>%
+  dplyr::rename(Source = id) %>% 
+  select(Source, Target, Correlation, Type.x) %>% 
+  dplyr::rename(Label = Target)
+
+edges_num <- left_join(edges_num,nodes, by = "Label") %>% 
+  select(Source, id, Correlation, Type.x) %>% 
+  dplyr::rename(Target = id, Type = Type.x)
+
+#Saving edges file as csv
+write_csv(edges, "/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/edges_gene_labels_75_assembled.csv")
+
+write_csv(edges_num, "/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/edges_gene_75_assembled.csv")
+```

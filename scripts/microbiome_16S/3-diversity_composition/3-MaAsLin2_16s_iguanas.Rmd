@@ -1,0 +1,123 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+#MaASlin2
+```{r}
+#INSTALLATION https://github.com/biobakery/Maaslin2
+
+if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("Maaslin2")
+```
+
+
+```{r}
+my_metadata <- read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/metadata_marine-iguana_2021-04-08.csv", sep = ",", header = TRUE, row.names=1, na.strings = "")
+metadata_CD_PE <- read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/metadata_CD_PE.csv", sep = ",", header = TRUE, row.names=1, na.strings = "")
+metadata_CD_RA <- read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/metadata_CD_RA.csv", sep = ",", header = TRUE, row.names=1, na.strings = "")
+metadata_PE_RA <- read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/metadata_PE_RA.csv", sep = ",", header = TRUE, row.names=1, na.strings = "")
+```
+
+```{r}
+phylum <-  read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/kraken2/phylum_matrix.txt", sep = "\t", header = TRUE, row.names=1, na.strings = "")
+phylum[is.na(phylum)] <- 0
+
+family <-  read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/kraken2/family_matrix.txt", sep = "\t", header = TRUE, row.names=1, na.strings = "")
+
+genus <-  read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/kraken2/genus_matrix.txt", sep = "\t", header = TRUE, row.names=1, na.strings = "")
+```
+
+```{r}
+my_metadata <- read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/metadata_marine-iguana_2021-04-08 copy.csv", sep = ",", header = TRUE, row.names=1, na.strings = "")
+metadata_CD_PE <- read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/metadata_CD_PE copy.csv", sep = ",", header = TRUE, row.names=1, na.strings = "")
+metadata_CD_RA <- read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/metadata_CD_RA copy.csv", sep = ",", header = TRUE, row.names=1, na.strings = "")
+metadata_PE_RA <- read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/metadata_PE_RA copy.csv", sep = ",", header = TRUE, row.names=1, na.strings = "")
+```
+
+```{r}
+ct30 <-  read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/data/smartchip/ct30_iguana.txt", sep = "\t", header = TRUE, row.names=1, na.strings = "")
+
+ct32 <-  read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/data/smartchip/ct32_iguana.txt", sep = "\t", header = TRUE, row.names=1, na.strings = "")
+
+ct30_class <-  read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/data/smartchip/ct30_iguana_class.txt", sep = "\t", header = TRUE, row.names=1, na.strings = "")
+
+ct32_class <-  read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/data/smartchip/ct32_iguana_class.txt", sep = "\t", header = TRUE, row.names=1, na.strings = "")
+```
+
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2")
+
+enzymes <-  read.table("ec-feature-table.txt", sep = "\t", header = TRUE, row.names=1, na.strings = "")
+
+keggs <-  read.table("ko-feature-table.txt", sep = "\t", header = TRUE, row.names=1, na.strings = "")
+
+pathways <-  read.table("pt-feature-table.txt", sep = "\t", header = TRUE, row.names=1, na.strings = "")
+```
+
+```{r}
+library(Maaslin2)
+fit_data <- Maaslin2(
+    ct30_class, my_metadata, '~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/smartchip_ct30-class_CD',
+    fixed_effects = c("location","island"),
+    random_effects = c("DNA_ext_date"),
+    reference = "location,Cabo Douglas",
+    standardize =FALSE)
+```
+
+```{r}
+library(Maaslin2)
+fit_data <- Maaslin2(
+    enzymes, my_metadata, '~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/location_family',
+    fixed_effects = c("location","island"),
+    random_effects = c("DNA_ext_date"),
+    reference = "location,Punta Espinoza",
+    standardize =FALSE)
+```
+
+```{r}
+library(Maaslin2)
+fit_data <- Maaslin2(
+    pathways, my_metadata, '~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/pathways_family_PE',
+    fixed_effects = c("location","island"),
+    random_effects = c("DNA_ext_date"),
+    reference = "location,Punta Espinoza",
+    standardize =FALSE)
+```
+
+```{r}
+library(Maaslin2)
+fit_data <- Maaslin2(
+    phylum, metadata_CD_PE, '~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/CD_PE_phylum', fixed_effects = c("location","island"),
+    random_effects = c("DNA_ext_date"),
+    standardize =FALSE)
+```
+
+```{r}
+#library(Maaslin2)
+fit_data <- Maaslin2(
+    phylum, metadata_PE_RA, '~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/PE_RA_phylum', fixed_effects = c("location","island"),
+    random_effects = c("DNA_ext_date"),
+    standardize =FALSE)
+```
+
+```{r}
+library(Maaslin2)
+fit_data <- Maaslin2(
+    family, metadata_PE_RA, '~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/PE_RA_family',
+    fixed_effects = c("location","island"),
+    random_effects = c("DNA_ext_date"),
+    standardize =FALSE)
+```
+
+```{r}
+library(Maaslin2)
+fit_data <- Maaslin2(
+    genus, my_metadata, '~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/maaslin2/genus_RA',
+    fixed_effects = c("location","island"),
+    random_effects = c("DNA_ext_date"),
+    reference = "location,Rabida",
+    standardize =FALSE)
+```

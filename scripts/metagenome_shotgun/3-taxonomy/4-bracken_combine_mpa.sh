@@ -1,0 +1,12 @@
+#!/bin/bash --login  
+
+KRAKEN_TOOLS_DIR=/mnt/home/vascokar/kraken2/KrakenTools-master
+INPUT_DIRECTORY=/mnt/scratch/vascokar/marine_iguana/shotgun/kraken2
+
+cd $INPUT_DIRECTORY
+
+$KRAKEN_TOOLS_DIR/combine_mpa.py \
+-r CD11_S3_L008_bracken_species_mpa.txt CD13_S9_L008_bracken_species_mpa.txt CD15_S1_L008_bracken_species_mpa.txt CD18_S19_L008_bracken_species_mpa.txt CD21_S24_L008_bracken_species_mpa.txt CD27_S29_L008_bracken_species_mpa.txt CD34_S34_L008_bracken_species_mpa.txt CD38_S39_L008_bracken_species_mpa.txt CD44_S4_L008_bracken_species_mpa.txt CD49_S10_L008_bracken_species_mpa.txt CD4_S33_L008_bracken_species_mpa.txt CD6_S38_L008_bracken_species_mpa.txt PE04_S35_L008_bracken_species_mpa.txt PE23_S40_L008_bracken_species_mpa.txt PE25_S5_L008_bracken_species_mpa.txt PE32_S11_L008_bracken_species_mpa.txt PE36_S16_L008_bracken_species_mpa.txt PE37_S21_L008_bracken_species_mpa.txt PE48_S26_L008_bracken_species_mpa.txt PE49_S31_L008_bracken_species_mpa.txt PE52_S36_L008_bracken_species_mpa.txt PE54_S41_L008_bracken_species_mpa.txt PE57_S6_L008_bracken_species_mpa.txt PE60_S12_L008_bracken_species_mpa.txt R01_S17_L008_bracken_species_mpa.txt R02_S22_L008_bracken_species_mpa.txt R03_S27_L008_bracken_species_mpa.txt R04_S32_L008_bracken_species_mpa.txt R05_S37_L008_bracken_species_mpa.txt R06_S42_L008_bracken_species_mpa.txt R07_S7_L008_bracken_species_mpa.txt R08_S13_L008_bracken_species_mpa.txt \
+--sample-names CD11,CD13,CD15,CD18,CD21,CD27,CD34,CD38,CD44,CD49,CD4,CD6,PE04,PE23,PE25,PE32,PE36,PE37,PE48,PE49,PE52,PE54,PE57,PE60,R01,R02,R03,R04,R05,R06,R07,R08 \
+-o bracken_combined_sp_mpa_reads.txt \
+--display-headers

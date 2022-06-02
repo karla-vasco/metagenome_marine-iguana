@@ -1,0 +1,124 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+##Importing tables
+```{r echo = FALSE}
+library(dplyr)
+library(readxl)
+
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/functional_HUMANN")
+
+#read in otu table
+otu_table = read_excel("humman_iguanas.xlsx", sheet="otu_table_genus")
+
+library(tibble)
+otu_table <- otu_table %>% remove_rownames %>% column_to_rownames(var="OTU_ID")
+otu_table=as.matrix(otu_table)
+otu_table <- otu_table*10^9
+mode(otu_table) <- "integer"
+
+#read in taxonomy
+taxonomy = read_excel("humman_iguanas.xlsx", sheet="taxonomy_genus")
+taxonomy <- taxonomy %>% remove_rownames %>% column_to_rownames(var="OTU_ID")
+taxonomy=as.matrix(taxonomy)
+
+#read in metadata
+metadata <- read_excel("humman_iguanas.xlsx", sheet = "metadata")
+metadata <- metadata %>% remove_rownames %>% column_to_rownames(var="sample_ID")
+
+library("phyloseq")
+
+#import as phyloseq objects
+OTU = otu_table(otu_table,taxa_are_rows=TRUE)
+TAX = tax_table(taxonomy)
+META = sample_data(metadata)
+
+#Final phyloseq output is named as physeq
+physeq_metabolome=phyloseq(OTU,TAX,META)
+```
+
+#Alpha diversity
+```{r fig.width=10, fig.height=40}
+physeq=physeq_metabolome
+alpha_diversity <- estimate_richness(physeq, measures = c("Shannon", "Observed", "Chao1"))
+df_alpha <- data.frame(alpha_diversity, sample_data(physeq))
+alpha_table <- reshape2::melt(df_alpha, measure.var=c("Shannon","Observed","Chao1"),id.vars=c("Location","Island")) %>% 
+  rename(Index = variable)
+alpha_table$value = as.numeric(alpha_table$value)
+```
+
+```{r fig.height=5, fig.width=14}
+library(ggplot2)
+library(ggpubr)
+library(ggsci)
+
+my_comparisons <- list(c("Cabo Douglas", "Punta Espinoza"), c("Punta Espinoza", "Rabida"), c("Cabo Douglas", "Rabida"))
+
+##################### Running box plot #############################
+alpha_plot <- alpha_table %>% 
+  filter(Index %in% c("Shannon","Chao1")) %>% #shannon_box, chao1_box
+  ggboxplot(x = "Location", y = "value", fill = "Location", add = "jitter", alpha=0.5, color = "Location", ylab = "Value", facet.by = "Index", scales ="free_y", 
+       #     panel.labs = list(Index = c("Shannon; p = 0.0023", "Observed, p = 0035", "Chao 1, p = 0.041"))
+            ) +
+  theme(legend.position = "none",axis.title.x=element_blank()) + 
+  stat_compare_means(comparisons = my_comparisons, 
+                     tip.length=.02, hide.ns = F) +
+  stat_compare_means(label.y.npc = "bottom", label.x.npc = .2) +
+   scale_fill_aaas() + scale_color_aaas()
+alpha_plot
+```
+
+
+#Bray statistics
+```{r}
+## PERMANOVA
+library(vegan)
+bray_dist = phyloseq::distance(physeq, method="bray") #RUN this only once because it takes a lot of time
+adonis_bray = adonis(bray_dist ~ sample_data(physeq)$Location)
+adonis_bray
+
+## Significant PERMANOVA indicates that centroid (or spatial median) among groups is different and/or with-group dispersion among groups is different
+
+## PERMDISP
+bray_disp <-betadisper(bray_dist, sample_data(physeq)$Location, type=c("median"))
+anova(bray_disp)
+
+
+## If PERMANOVA and PERMDISP are both significant, you can use plotting to tell if PERMANOVA was significant based on centroid (or spatial median)
+plot(bray_disp, label = T, hull = F, ellipse = T)
+
+## Within-group dispersion that PERMDISP is testing
+boxplot(bray_disp, las = 2, cex.lab=1.5)
+?boxplot
+
+## pairwise p-values
+TukeyHSD(bray_disp)
+
+scores(bray_disp, 1:4, display = "centroids")
+```
+
+##Bray beta diversity plot
+```{r}
+label_perm <- expression(paste("PERMANOVA, ",R^2 ,"= 0.2, ", paste(italic('p')),"=0.005"))
+
+beta_bray <- ordinate(physeq, "PCoA", "bray") #RUN this only ONCE because it takes a lot of time
+beta_bray_plot = plot_ordination(physeq, beta_bray, type="Location", color="Location") + 
+  stat_ellipse(type = "t", linetype = 1, level = .7) + 
+  theme_classic()+
+  labs(colour = "Location") +#To add arrows https://neavemj.github.io/posts/coralMicrobiome
+  annotate("text", x = 0, y = 0.1, label = label_perm, colour = "black") +
+  scale_color_aaas()
+
+beta_bray_plot
+```
+
+```{r fig.width=7, fig.height=5}
+diversity = ggarrange(alpha_plot, beta_bray_plot, nrow = 2, ncol = 1, labels = c("A","B"))
+diversity
+```
+```{r}
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+ggsave("metabolome_diversity.png", plot = diversity, width = 9, height = 8)
+```

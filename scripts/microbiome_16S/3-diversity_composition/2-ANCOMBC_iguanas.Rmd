@@ -1,0 +1,606 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#Libraries needed
+```{r}
+library("phyloseq")
+library("ggplot2")
+library("ANCOMBC")
+```
+
+#Phyloseq object
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/microbiome_16S/qiime2_phyloseq")
+
+#read in otu table
+otu_table = read.table("feature-table.txt",sep="\t",row.names = 1,header = TRUE)
+otu_table=as.matrix(otu_table,rownames=TRUE)
+
+#read in taxonomy
+taxonomy = read.csv("taxonomy.tsv",sep="\t",row.names=1)
+taxonomy=as.matrix(taxonomy)
+
+#read in metadata
+metadata=read.table("metadata_marine-iguana_2021-04-08.csv", sep = ",", header = TRUE, row.names=1, na.strings = "") 
+metadata
+phy_tree = read_tree("tree.nwk")
+
+#import as phyloseq objects
+OTU = otu_table(otu_table,taxa_are_rows=TRUE)
+TAX = tax_table(taxonomy)
+META = sample_data(metadata)
+
+#Physeq object
+physeq=phyloseq(OTU,TAX,META,phy_tree)
+```
+
+#Fitering Chloroplast and Mitocondria OTUs
+```{r}
+`%notin%` <- Negate(`%in%`)
+
+#Filtering samples
+physeq_filtered = subset_taxa(physeq, Order %notin% "Chloroplast", Family %notin% "Mitochondria")
+physeq = physeq_filtered
+```
+
+#ANCOM-BC
+Differential abundance (DA) analysis of microbiome
+https://www.nature.com/articles/s41467-020-17041-7
+
+##ANCOMBC phylum
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq, "Phylum")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "island",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "island", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "Island")
+
+#Exporting significant results as a csv file
+#write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_phylum_island.csv",sep = ",", row.names = F)
+```
+
+##Filtering samples per two sites
+```{r}
+physeq_CD_RA <- subset_samples(physeq, location%in%c("Cabo Douglas", "Rabida"))
+physeq_CD_PE <- subset_samples(physeq, location%in%c("Cabo Douglas", "Punta Espinoza"))
+physeq_RA_PE <- subset_samples(physeq, location%in%c("Punta Espinoza", "Rabida"))
+```
+
+#ANCOM CD PE
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_PE, "Phylum")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_phylum_CD_PE.csv",sep = ",", row.names = F)
+```
+
+
+#ANCOM CD RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_RA, "Phylum")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_phylum_CD_RA.csv",sep = ",", row.names = F)
+```
+
+#ANCOM PE RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_RA_PE, "Phylum")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_phylum_PE_RA.csv",sep = ",", row.names = F)
+```
+
+#ANCOM
+##ANCOMBC Order
+```{r}
+physeq = physeq_filtered
+```
+
+##Filtering samples per two sites
+```{r}
+physeq_CD_RA <- subset_samples(physeq, location%in%c("Cabo Douglas", "Rabida"))
+physeq_CD_PE <- subset_samples(physeq, location%in%c("Cabo Douglas", "Punta Espinoza"))
+physeq_RA_PE <- subset_samples(physeq, location%in%c("Punta Espinoza", "Rabida"))
+```
+
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq, "Order")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "island",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "island", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "Island")
+
+#Exporting significant results as a csv file
+#write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Order_island.csv",sep = ",", row.names = F)
+```
+
+#ANCOM CD PE
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_PE, "Order")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Order_CD_PE.csv",sep = ",", row.names = F)
+```
+
+#ANCOM CD RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_RA, "Order")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+#write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Order_CD_RA.csv",sep = ",", row.names = F)
+```
+
+#ANCOM PE RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_RA_PE, "Order")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Order_PE_RA.csv",sep = ",", row.names = F)
+```
+
+#ANCOM
+##ANCOMBC Genus
+```{r}
+physeq = physeq_filtered
+```
+
+##Filtering samples per two sites
+```{r}
+physeq_CD_RA <- subset_samples(physeq, location%in%c("Cabo Douglas", "Rabida"))
+physeq_CD_PE <- subset_samples(physeq, location%in%c("Cabo Douglas", "Punta Espinoza"))
+physeq_RA_PE <- subset_samples(physeq, location%in%c("Punta Espinoza", "Rabida"))
+```
+
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq, "Genus")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "island",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "island", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "Island")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Genus_island.csv",sep = ",", row.names = F)
+```
+
+#ANCOM CD PE
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_PE, "Genus")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Genus_CD_PE.csv",sep = ",", row.names = F)
+```
+
+#ANCOM CD RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_RA, "Genus")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Genus_CD_RA.csv",sep = ",", row.names = F)
+```
+
+#ANCOM PE RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_RA_PE, "Genus")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Genus_PE_RA.csv",sep = ",", row.names = F)
+```
+
+#ANCOM
+##ANCOMBC Genus
+```{r}
+physeq = physeq_filtered
+```
+
+##Filtering samples per two sites
+```{r}
+physeq_CD_RA <- subset_samples(physeq, location%in%c("Cabo Douglas", "Rabida"))
+physeq_CD_PE <- subset_samples(physeq, location%in%c("Cabo Douglas", "Punta Espinoza"))
+physeq_RA_PE <- subset_samples(physeq, location%in%c("Punta Espinoza", "Rabida"))
+```
+
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq, "Genus")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "island",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "island", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "Island")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Genus_island.csv",sep = ",", row.names = F)
+```
+
+#ANCOM CD PE
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_PE, "Genus")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Genus_CD_PE.csv",sep = ",", row.names = F)
+```
+
+#ANCOM CD RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_RA, "Genus")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Genus_CD_RA.csv",sep = ",", row.names = F)
+```
+
+#ANCOM PE RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_RA_PE, "Genus")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(q_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/microbiome_16S/ancom/ANCOM_Genus_PE_RA.csv",sep = ",", row.names = F)
+```

@@ -1,0 +1,560 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+#VIRULENCE
+
+##Phyloseq Virulence factors
+```{r}
+library(readxl)
+library(tibble)
+library(dplyr)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun")
+metadata <- read_excel("contigs_iguanas_tables.xlsx", sheet = "metadata") 
+VFDB <- read_excel("contigs_iguanas_tables.xlsx", sheet = "VFDB")
+
+#OTU TABLE normalized by the number of bacterial reads
+
+norm_abundance <- merge(VFDB, metadata, by = "sample_id") %>% 
+  select(sample_id, VFDB_ID, VFDB_Count, Bacteria_bracken) %>% 
+  group_by(sample_id, VFDB_ID) %>% 
+  summarise(norm.abundance = sum(VFDB_Count/Bacteria_bracken)) %>% 
+  as.data.frame()
+
+library(tidyr)
+VFDB.norm.mx <-spread(norm_abundance, key = sample_id, value = norm.abundance) %>%  tibble::remove_rownames() %>%  tibble::column_to_rownames("VFDB_ID")
+  
+VFDB.norm.mx[is.na(VFDB.norm.mx)] = 0
+VFDB.norm.mx=as.matrix(VFDB.norm.mx,rownames=T)
+VFDB.norm.mx <- VFDB.norm.mx*10^32
+
+#Making taxonomy table
+taxonomy <- VFDB %>% select(VFDB_ID, VFDB_Mechanism,VFDB_Class,VFDB_Gene) %>% 
+  distinct() %>% #Remove duplicate rows
+  arrange(VFDB_ID) %>% #organize names alphabetically
+  rename(OTU = VFDB_ID,Mechanism = VFDB_Mechanism,Class = VFDB_Class, Gene = VFDB_Gene) %>% #Rename columns
+  tibble::remove_rownames() %>%  tibble::column_to_rownames("OTU")
+taxonomy=as.matrix(taxonomy,rownames=TRUE)
+
+#Phyloseq object
+library(phyloseq)
+#import as phyloseq objects
+OTU = otu_table(VFDB.norm.mx,taxa_are_rows=T)
+TAX = tax_table(taxonomy)
+META = metadata %>% tibble::remove_rownames() %>% tibble::column_to_rownames("sample_id") %>% sample_data()
+
+#(tree was already imported as a phyloseq object)
+physeq_virulence = phyloseq(OTU,TAX,META)
+```
+
+Filter phyloseq per site to analyze the core composition per location
+```{r}
+physeq = physeq_virulence %>% tax_glom(taxrank = 'Gene')
+CD_physeq <- physeq %>% subset_samples(Location %in% "Cabo Douglas")
+PE_physeq <- physeq %>% subset_samples(Location %in% "Punta Espinoza")
+RA_physeq <- physeq %>% subset_samples(Location %in% "Rabida")
+```
+
+#Core virulome
+```{r}
+library(microbiome)
+#CABO DOUGLAS
+# Calculate compositional version of the data (relative abundances)
+physeq = CD_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_CD <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Cabo Douglas")
+core.taxa_CD
+
+#PUNTA ESPINOZA
+# Calculate compositional version of the data (relative abundances)
+physeq = PE_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_PE <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Punta Espinoza")
+core.taxa_PE
+
+#RABIDA
+# Calculate compositional version of the data (relative abundances)
+physeq = RA_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_RA <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Rabida")
+core.taxa_RA
+
+core.location <- union(core.taxa_CD, core.taxa_PE) %>% union (core.taxa_RA)
+
+core.location_summary <- core.location %>% group_by(Gene, Location) %>% summarise(gene_presence = n()) %>% as.data.frame() %>% spread(key = Location, value = gene_presence)
+core.location_summary[is.na(core.location_summary)] = 0
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun/")
+write.csv(core.location_summary,"core_location_virulence_atleast1.csv")
+```
+
+##Venn diagram
+```{r}
+#install.packages('VennDiagram')
+library(ggsci)
+library(ggpubr)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+library(VennDiagram)
+
+myCol <- get_palette("aaas",3)
+
+venn_virulence <- venn.diagram(list(`Cabo Douglas` = core.taxa_CD$Gene, `Punta Espinoza` = core.taxa_PE$Gene, Rabida = core.taxa_RA$Gene), 
+                   alpha = c(0.5, 0.5, 0.5),
+                   filename="core_virulome_venn_1.png",
+                   output =  TRUE,
+                   imagetype = "png",
+                  main = "Core virulome", main.fontface = "bold", main.fontfamily = "sans", main.cex = 2,
+                  lwd = 2,
+                   print.mode =  c("raw","percent"),
+                   lty = 'blank',
+                   height = 4000 , 
+                   width = 4000 , 
+                   fill = myCol,
+                   fontfamily = "sans", cat.fontfamily = "sans",cat.fontface = "bold")
+```
+
+
+#ARGs
+#Phyloseq ARGs
+```{r}
+library(readxl)
+library(tibble)
+library(dplyr)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun")
+metadata <- read_excel("contigs_iguanas_tables.xlsx", sheet = "metadata") 
+deepARG <- read_excel("contigs_iguanas_tables.xlsx", sheet = "deepARG")
+
+#OTU TABLE normalized by the number of bacterial reads
+norm_abundance <- merge(deepARG, metadata, by = "sample_id") %>% 
+  select(sample_id, `deepARG_best-hit`, deepARG_counts, Bacteria_bracken) %>% 
+  group_by(sample_id, `deepARG_best-hit`) %>% 
+  summarise(norm.abundance = sum(deepARG_counts/Bacteria_bracken)) %>% 
+  as.data.frame()
+
+library(tidyr)
+deepARG.norm.mx <-spread(norm_abundance, key = sample_id, value = norm.abundance) %>%  tibble::remove_rownames() %>%  tibble::column_to_rownames("deepARG_best-hit")
+  
+deepARG.norm.mx[is.na(deepARG.norm.mx)] = 0
+deepARG.norm.mx=as.matrix(deepARG.norm.mx,rownames=T)
+deepARG.norm.mx <- deepARG.norm.mx*10^32
+
+#Making taxonomy table
+taxonomy <- deepARG %>% select(`deepARG_best-hit`,deepARG_Class,deepARG_ARG) %>% 
+  distinct() %>% #Remove duplicate rows
+  arrange(`deepARG_best-hit`) %>% #organize names alphabetically
+  rename(OTU = `deepARG_best-hit`, Class = deepARG_Class, ARG = deepARG_ARG) %>% #Rename columns
+  tibble::remove_rownames() %>%  tibble::column_to_rownames("OTU")
+taxonomy=as.matrix(taxonomy,rownames=TRUE)
+
+library(phyloseq)
+#import as phyloseq objects
+OTU = otu_table(deepARG.norm.mx,taxa_are_rows=T)
+TAX = tax_table(taxonomy)
+META = metadata %>% tibble::remove_rownames() %>% tibble::column_to_rownames("sample_id") %>% sample_data()
+
+#(tree was already imported as a phyloseq object)
+physeq_args = phyloseq(OTU,TAX,META)
+```
+
+Filter phyloseq per site to analyze the core composition per location
+```{r}
+physeq = physeq_args %>% tax_glom(taxrank = 'ARG')
+CD_physeq <- physeq %>% subset_samples(Location %in% "Cabo Douglas")
+PE_physeq <- physeq %>% subset_samples(Location %in% "Punta Espinoza")
+RA_physeq <- physeq %>% subset_samples(Location %in% "Rabida")
+```
+
+#Core resistome
+```{r}
+library(microbiome)
+#CABO DOUGLAS
+# Calculate compositional version of the data (relative abundances)
+physeq = CD_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_CD <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Cabo Douglas")
+core.taxa_CD
+
+#PUNTA ESPINOZA
+# Calculate compositional version of the data (relative abundances)
+physeq = PE_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_PE <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Punta Espinoza")
+core.taxa_PE
+
+#RABIDA
+# Calculate compositional version of the data (relative abundances)
+physeq = RA_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_RA <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Rabida")
+core.taxa_RA
+
+core.location <- union(core.taxa_CD, core.taxa_PE) %>% union (core.taxa_RA)
+
+core.location_summary <- core.location %>% group_by(ARG, Location) %>% summarise(gene_presence = n()) %>% as.data.frame() %>% spread(key = Location, value = gene_presence)
+core.location_summary[is.na(core.location_summary)] = 0
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun/")
+write.csv(core.location_summary,"core_location_args_atleast1.csv")
+```
+
+##Venn diagram
+```{r}
+#install.packages('VennDiagram')
+library(ggsci)
+library(ggpubr)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+library(VennDiagram)
+
+myCol <- get_palette("aaas",3)
+
+venn_args <- venn.diagram(list(`Cabo Douglas` = core.taxa_CD$ARG, `Punta Espinoza` = core.taxa_PE$ARG, Rabida = core.taxa_RA$ARG), 
+                   alpha = c(0.5, 0.5, 0.5),
+                   filename="core_args_venn_1.png",
+                   main = "Core resistome", main.fontface = "bold", main.fontfamily = "sans", main.cex = 2,
+                   output =  TRUE,
+                   imagetype = "png",
+                   print.mode =  c("raw","percent"),
+                  lwd = 2,
+                   lty = 'blank',
+                   height = 4000 , 
+                   width = 4000 , 
+                   fill = myCol,
+                   fontfamily = "sans", cat.fontfamily = "sans",cat.fontface = "bold")
+```
+
+#MGES
+##Phyloseq mges
+```{r}
+library(readxl)
+library(tibble)
+library(dplyr)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun")
+metadata <- read_excel("contigs_iguanas_tables.xlsx", sheet = "metadata") 
+mobileOG <- read_excel("contigs_iguanas_tables.xlsx", sheet = "mobileOG")
+
+#OTU TABLE normalized by the number of bacterial reads
+norm_abundance <- merge(mobileOG, metadata, by = "sample_id") %>% 
+  select(sample_id, mobileOG_id, MGE_count, Bacteria_bracken) %>% 
+  group_by(sample_id, mobileOG_id) %>% 
+  summarise(norm.abundance = sum(MGE_count/Bacteria_bracken)) %>% 
+  as.data.frame()
+
+library(tidyr)
+mobileOG.norm.mx <-spread(norm_abundance, key = sample_id, value = norm.abundance) %>%  tibble::remove_rownames() %>%  tibble::column_to_rownames("mobileOG_id")
+  
+mobileOG.norm.mx[is.na(mobileOG.norm.mx)] = 0
+mobileOG.norm.mx=as.matrix(mobileOG.norm.mx,rownames=T)
+mobileOG.norm.mx <- mobileOG.norm.mx*10^32
+
+#Making taxonomy table
+taxonomy <- mobileOG %>% select(mobileOG_id,MGE_Type, MGE_Mechanism,MGE_class,MGE_Gene) %>% 
+  distinct() %>% #Remove duplicate rows
+  arrange(mobileOG_id) %>% #organize names alphabetically
+  rename(OTU = mobileOG_id,Type = MGE_Type,Mechanism = MGE_Mechanism,Class = MGE_class, Gene = MGE_Gene) %>% #Rename columns
+  tibble::remove_rownames() %>%  tibble::column_to_rownames("OTU")
+taxonomy=as.matrix(taxonomy,rownames=TRUE)
+
+library(phyloseq)
+#import as phyloseq objects
+OTU = otu_table(mobileOG.norm.mx,taxa_are_rows=T)
+TAX = tax_table(taxonomy)
+META = metadata %>% tibble::remove_rownames() %>% tibble::column_to_rownames("sample_id") %>% sample_data()
+
+#(tree was already imported as a phyloseq object)
+physeq_mges=phyloseq(OTU,TAX,META)
+```
+
+Filter phyloseq per site to analyze the core composition per location
+```{r}
+physeq = physeq_mges
+CD_physeq <- physeq %>% subset_samples(Location %in% "Cabo Douglas")
+PE_physeq <- physeq %>% subset_samples(Location %in% "Punta Espinoza")
+RA_physeq <- physeq %>% subset_samples(Location %in% "Rabida")
+```
+
+#Core mobilome
+```{r}
+library(microbiome)
+#CABO DOUGLAS
+# Calculate compositional version of the data (relative abundances)
+physeq = CD_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_CD <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Cabo Douglas")
+core.taxa_CD
+
+#PUNTA ESPINOZA
+# Calculate compositional version of the data (relative abundances)
+physeq = PE_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_PE <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Punta Espinoza")
+core.taxa_PE
+
+#RABIDA
+# Calculate compositional version of the data (relative abundances)
+physeq = RA_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_RA <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Rabida")
+core.taxa_RA
+
+core.location <- union(core.taxa_CD, core.taxa_PE) %>% union (core.taxa_RA)
+
+core.location_summary <- core.location %>% group_by(Mechanism, Class, Gene, Location) %>% summarise(gene_presence = n()) %>% as.data.frame() %>% spread(key = Location, value = gene_presence) 
+core.location_summary[is.na(core.location_summary)] = 0
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun/")
+write.csv(core.location_summary,"core_location_mges_atleast1.csv")
+```
+
+```{r}
+#install.packages('VennDiagram')
+library(ggsci)
+library(ggpubr)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+library(VennDiagram)
+
+myCol <- get_palette("aaas",3)
+
+venn_mges <- venn.diagram(list(`Cabo Douglas` = core.taxa_CD$Gene, `Punta Espinoza` = core.taxa_PE$Gene, Rabida = core.taxa_RA$Gene), 
+                   alpha = c(0.5, 0.5, 0.5),
+                   filename="core_mobilome_venn_1.png",
+                   output =  TRUE,
+                   imagetype = "png",
+                   main = "Core mobilome", main.fontface = "bold", main.fontfamily = "sans", main.cex = 2,
+                  lwd = 2,
+                   print.mode =  c("raw","percent"),
+                   lty = 'blank',
+                   height = 4000 , 
+                   width = 4000 , 
+                   fill = myCol,
+                   fontfamily = "sans", cat.fontfamily = "sans",cat.fontface = "bold")
+```
+
+#METABOLOME
+##Importing tables
+```{r echo = FALSE}
+library(dplyr)
+library(readxl)
+
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/functional_HUMANN")
+
+#read in otu table
+otu_table = read_excel("humman_iguanas.xlsx", sheet="otu_table_genus")
+
+library(tibble)
+otu_table <- otu_table %>% remove_rownames %>% column_to_rownames(var="OTU_ID")
+otu_table=as.matrix(otu_table)
+otu_table <- otu_table*10^9
+mode(otu_table) <- "integer"
+
+#read in taxonomy
+taxonomy = read_excel("humman_iguanas.xlsx", sheet="taxonomy_genus")
+taxonomy <- taxonomy %>% remove_rownames %>% column_to_rownames(var="OTU_ID")
+taxonomy=as.matrix(taxonomy)
+
+#read in metadata
+metadata <- read_excel("humman_iguanas.xlsx", sheet = "metadata")
+metadata <- metadata %>% remove_rownames %>% column_to_rownames(var="sample_ID")
+
+library("phyloseq")
+
+#import as phyloseq objects
+OTU = otu_table(otu_table,taxa_are_rows=TRUE)
+TAX = tax_table(taxonomy)
+META = sample_data(metadata)
+
+#Final phyloseq output is named as physeq
+physeq_metabolome=phyloseq(OTU,TAX,META)
+```
+
+Filter phyloseq per site to analyze the core composition per location
+```{r}
+physeq = physeq_metabolome %>% tax_glom(taxrank = "Pathway")
+CD_physeq <- physeq %>% subset_samples(Location %in% "Cabo Douglas")
+PE_physeq <- physeq %>% subset_samples(Location %in% "Punta Espinoza")
+RA_physeq <- physeq %>% subset_samples(Location %in% "Rabida")
+```
+
+#Core mobilome
+```{r}
+library(microbiome)
+#CABO DOUGLAS
+# Calculate compositional version of the data (relative abundances)
+physeq = CD_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_CD <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Cabo Douglas")
+core.taxa_CD
+
+#PUNTA ESPINOZA
+# Calculate compositional version of the data (relative abundances)
+physeq = PE_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_PE <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Punta Espinoza")
+core.taxa_PE
+
+#RABIDA
+# Calculate compositional version of the data (relative abundances)
+physeq = RA_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_RA <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Rabida")
+core.taxa_RA
+
+core.location <- union(core.taxa_CD, core.taxa_PE) %>% union (core.taxa_RA)
+
+core.location_summary <- core.location %>% group_by(Pathway, Location) %>% summarise(gene_presence = n()) %>% as.data.frame() %>% spread(key = Location, value = gene_presence) 
+core.location_summary[is.na(core.location_summary)] = 0
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun/")
+write.csv(core.location_summary,"core_location_metabolomepaths_atleast1.csv")
+```
+
+```{r}
+#install.packages('VennDiagram')
+library(ggsci)
+library(ggpubr)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+library(VennDiagram)
+
+myCol <- get_palette("aaas",3)
+
+venn_metabolome <- venn.diagram(list(`Cabo Douglas` = core.taxa_CD$Pathway, 
+                                     `Punta Espinoza` = core.taxa_PE$Pathway, 
+                                     Rabida = core.taxa_RA$Pathway), 
+                   alpha = c(0.5, 0.5, 0.5),
+                   filename="core_metabolome_venn_1.png",
+                   output =  TRUE,
+                   imagetype = "png",
+                   main = "Core metabolome", main.fontface = "bold", main.fontfamily = "sans", main.cex = 2,
+                    print.mode =  c("raw","percent"),
+                  lwd = 2,
+                   lty = 'blank',
+                   height = 4000 , 
+                   width = 4000 , 
+                   fill = myCol,
+                   fontfamily = "sans", cat.fontfamily = "sans",cat.fontface = "bold")
+```
+
+#MICROBIOME
+```{r}
+library(readxl)
+
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun/taxonomy_kraken")
+
+#read in otu table
+otu_table <- read_excel("bracken_marine_iguana_species.xlsx", sheet = "otu_table")
+
+library(tibble)
+otu_table <- otu_table %>% remove_rownames %>% column_to_rownames(var="OTU_ID")
+otu_table=as.matrix(otu_table,rownames=TRUE)
+#mode(otu_table) <- "integer"
+otu_table[is.na(otu_table)] <- 0
+
+#read in taxonomy
+taxonomy1 <- read_excel("bracken_marine_iguana_species.xlsx", sheet = "taxonomy")
+taxonomy <- taxonomy1 %>% remove_rownames %>% column_to_rownames(var="OTU_ID")
+taxonomy=as.matrix(taxonomy)
+
+#read in metadata
+metadata <- read_excel("bracken_marine_iguana_species.xlsx", sheet = "metadata")
+metadata <- metadata %>% remove_rownames %>% column_to_rownames(var="Sample_ID")
+
+library("phyloseq")
+#import as phyloseq objects
+OTU = otu_table(otu_table,taxa_are_rows=TRUE)
+TAX = tax_table(taxonomy)
+META = sample_data(metadata)
+
+#(tree was already imported as a phyloseq object)
+physeq_microbiome=phyloseq(OTU,TAX,META)
+```
+
+Filter phyloseq per site to analyze the core composition per location
+```{r}
+physeq = physeq_microbiome
+CD_physeq <- physeq %>% subset_samples(Location %in% "Cabo Douglas")
+PE_physeq <- physeq %>% subset_samples(Location %in% "Punta Espinoza")
+RA_physeq <- physeq %>% subset_samples(Location %in% "Rabida")
+```
+
+#Core mobilome
+```{r}
+library(microbiome)
+#CABO DOUGLAS
+# Calculate compositional version of the data (relative abundances)
+physeq = CD_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_CD <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Cabo Douglas")
+core.taxa_CD
+
+#PUNTA ESPINOZA
+# Calculate compositional version of the data (relative abundances)
+physeq = PE_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_PE <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Punta Espinoza")
+core.taxa_PE
+
+#RABIDA
+# Calculate compositional version of the data (relative abundances)
+physeq = RA_physeq
+pseq.rel <- microbiome::transform(physeq, "compositional")
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .08)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa_RA <- pseq.core@tax_table %>% as.data.frame() %>% mutate(Location = "Rabida")
+core.taxa_RA
+
+core.location <- union(core.taxa_CD, core.taxa_PE) %>% union (core.taxa_RA)
+
+core.location_summary <- core.location %>% group_by(Taxa, Location) %>% summarise(taxa_presence = n()) %>% as.data.frame() %>% spread(key = Location, value = taxa_presence) 
+core.location_summary[is.na(core.location_summary)] = 0
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun/")
+write.csv(core.location_summary,"core_location_taxakraken2_atleast1.csv")
+```
+
+```{r}
+#install.packages('VennDiagram')
+library(ggsci)
+library(ggpubr)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+library(VennDiagram)
+
+myCol <- get_palette("aaas",3)
+
+venn_microbiome<- venn.diagram(list(`Cabo Douglas` = core.taxa_CD$Taxa, 
+                                     `Punta Espinoza` = core.taxa_PE$Taxa, 
+                                     Rabida = core.taxa_RA$Taxa), 
+                   alpha = c(0.5, 0.5, 0.5),
+                   filename="core_microbiome2_venn_1.png",
+                   output =  TRUE,
+                   imagetype = "png",
+                   main = "Core microbiome", main.fontface = "bold", main.fontfamily = "sans", main.cex = 2,
+                  lwd = 2,
+                  print.mode =  c("raw","percent"),
+                   lty = 'blank',
+                   height = 4000 , 
+                   width = 4000 , 
+                   fill = myCol,
+                   fontfamily = "sans", cat.fontfamily = "sans",cat.fontface = "bold")
+```

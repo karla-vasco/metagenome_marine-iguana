@@ -1,0 +1,47 @@
+#!/bin/bash --login
+
+########## Define Resources Needed with SBATCH Lines ##########
+
+#SBATCH --job-name=diversity # give your job a name for easier identification (same as -J)
+#SBATCH --time=168:00:00        # limit of wall clock time - how long will the job take to run? (same as -t)
+#SBATCH --ntasks=1            # number of tasks - how many tasks (nodes) does your job require? (same as -n)
+#SBATCH --cpus-per-task=3    # number of CPUs (or cores) per task (same as -c)
+#SBATCH --mem=50G             # memory required per node - amount of memory (in bytes)
+#SBATCH --output=/mnt/home/vascokar/marine_iguana/eofiles/diversity.%j.out #Standard output
+#SBATCH --error=/mnt/home/vascokar/marine_iguana/eofiles/diversity.%j.err #Standard error log
+
+########## Diplay the job context ######
+echo Job: $SLUM_JOB_NAME with ID $SLURM_JOB_ID
+echo Running on host `hostname`
+echo Job started at `date '+%T %a %d %b %Y'`
+echo Directory is `pwd`
+echo Using $SLURM_NTASKS processors across $SLURM_NNODES nodes
+
+######### Assign path variables ########
+WORK_DIRECTORY=/mnt/home/vascokar/marine_iguana/results/qiime2
+METADATA_PATH=/mnt/home/vascokar/marine_iguana/data/metadata_marine-iguana_2021-04-05.txt
+
+########## Modules to Load ##########
+
+module purge
+module load Conda/3
+
+########## Code to Run ###########
+
+export PATH=$PATH:$HOME/anaconda3/bin
+conda init bash
+conda activate qiime2-2021.2
+
+cd $WORK_DIRECTORY
+
+qiime diversity core-metrics-phylogenetic \
+  --i-phylogeny insertion-tree.qza \
+  --i-table table-dn-97.qza \
+  --p-sampling-depth 15904 \
+  --m-metadata-file $METADATA_PATH \
+  --output-dir core-metrics-results
+
+conda deactivate
+
+##### Final time stamp ######
+echo Job finished at `date '+%T %a %d %b %Y'`

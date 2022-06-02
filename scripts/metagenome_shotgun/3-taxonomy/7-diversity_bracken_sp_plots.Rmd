@@ -1,0 +1,158 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#Importing tables
+```{r}
+library(readxl)
+
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun/taxonomy_kraken")
+
+#read in otu table
+shannon <- read.table("shannon_bracken_marine_iguana_species.tsv",sep="\t",header = TRUE)
+bray_matrix <- read_excel("bray-curtis_bracken_species.xlsx", sheet = "bray-curtis")
+library(tibble)
+bray_matrix <- bray_matrix %>% remove_rownames %>% column_to_rownames(var="Sample_ID")
+
+bray_dist <- dist(bray_matrix)
+
+metadata <- read_excel("bray-curtis_bracken_species.xlsx", sheet = "metadata")
+```
+
+##SHANNON 
+###Stats
+```{r}
+library(dplyr)
+library(rstatix)
+stat.test <- shannon %>% 
+  kruskal_test(Shannon ~ Location) %>%
+  add_significance("p")
+stat.test
+```
+
+```{r}
+library(dplyr)
+library(rstatix)
+stat.test <- shannon %>% 
+  wilcox_test(Shannon ~ Location, p.adjust.method = "none", alternative = "g") %>%
+  add_significance("p") %>% 
+    add_xy_position(x = "Location", dodge = 0.8)
+stat.test
+```
+
+
+###Boxplot
+```{r}
+library(ggpubr)
+library(ggsci)
+shannon_bracken_boxplot = ggboxplot(shannon, x = "Location", y = "Shannon", color = "Location", palette = "aaas", fill = "Location", add = c("jitter"), notch = F, outlier.shape = NA) +labs(x = element_blank(), y = "Shannon index") + scale_fill_aaas(alpha = 0.5) + theme(legend.position="top")
+
+shannon_bracken_boxplot = shannon_bracken_boxplot + stat_pvalue_manual(stat.test,  label = "p", tip.length = 0) +
+  annotate("text", x = 2, y = 6.1, label = "Kruskal-Wallis, p = 0.137", colour = "black")
+shannon_bracken_boxplot
+```
+
+
+##Beta-diversity
+###Bray statistics
+```{r}
+## PERMANOVA
+library(vegan)
+## Significant PERMANOVA indicates that centroid (or spatial median) among groups is different and/or with-group dispersion among groups is different
+
+adonis_bray = adonis(bray_dist ~ metadata$Location)
+adonis_bray
+
+## PERMDISP
+bray_disp <-betadisper(bray_dist, metadata$Location, type=c("median"))
+
+anova(bray_disp)
+
+## If PERMANOVA and PERMDISP are both significant, you can use plotting to tell if PERMANOVA was significant based on centroid (or spatial median)
+plot(bray_disp)
+#?plot.betadisper
+
+## pairwise p-values
+TukeyHSD(bray_disp)
+
+#scores centroids
+scores(bray_disp, 1:4, display = "centroids")
+
+#scores samples
+pcoa_bray_scores <- scores(bray_disp, 1:4, display = "sites")
+
+#eigenvalues components
+eigenvals(bray_disp)
+
+
+## Would look better with higher replication for groups
+plot(bray_disp, label = F)
+plot(bray_disp, axes = c(1,2), cex = 0.7,
+    col = NULL, lty = "solid", lwd = 1, hull = TRUE,
+     ellipse = FALSE,
+     segments = TRUE, seg.col = "grey",
+     label = TRUE, label.cex = 1)
+
+print(bray_disp, digits = max(3, getOption("digits") - 3),
+                           neigen = 8)
+## Plot with 1 standard deviation ellipses around the group medians
+## sample size issue here, but you get the idea
+plot(bray_disp, label = F, hull = F, ellipse = T)
+
+
+## Within-group dispersion that PERMDISP is testing
+boxplot(bray_disp, las = 2, cex.lab=1.5)
+```
+
+#Calculating PCoA variance
+```{r}
+### Perform PCoA 
+PCOA=cmdscale(bray_dist, eig=TRUE) # for data_cc
+
+# Calculate percent variance explained by each axes 1 and 2
+PCoA1_per=PCOA$eig[1]/sum(PCOA$eig)
+PCoA2_per=PCOA$eig[2]/sum(PCOA$eig)
+
+PCoA1_per
+PCoA2_per
+```
+
+```{r}
+# We can add other environmental factors, but for now just leave them out
+env.sub= metadata[, c('Location',"Island")]
+envEF.bc=envfit(PCOA, env.sub, permutations = 999, na.rm = TRUE)
+envEF.bc
+```
+
+#Bray-Curtis dissimilarity plot
+```{r}
+label_perm <- expression(paste("PERMANOVA, ",R^2 ,"= 0.18, ", paste(italic('p')),"=0.017"))
+
+beta_df = as.data.frame(PCOA[["points"]])
+beta_df <- tibble::rownames_to_column(beta_df, "Sample_ID")
+
+beta_meta = merge(beta_df,metadata,by = "Sample_ID",all=F)
+bray_plot_bracken = ggscatter(beta_meta, x = "V1", y = "V2", ellipse = 0.5, color = "Location", palette = "aaas",mean.point = F, mean.point.size = 5, star.plot = F) +labs(x = "PCoA 1 (75.96%) ", y = "PCoA 2 (16.24%)", colour = "Location", fill = "Location")+ annotate("text", x = -1.15, y = 1.2, label = label_perm, colour = "black") 
+bray_plot_bracken
+```
+
+#Saving alpha and beta diversty plots
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/metagenome_composition")
+
+diversity_bracken <-ggarrange(shannon_bracken_boxplot, bray_plot_bracken, nrow = 1, labels = c("A","B"), widths =c(1,1.5), common.legend = T)
+diversity_bracken
+
+ggsave("diversity_bracken.png", plot = diversity_bracken, height = 5, width = 11)
+```
+
+#Saving diversity and composition plots
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/metagenome_composition")
+
+diversity_bracken <-ggarrange(shannon_bracken_boxplot, bray_plot_bracken, nrow = 1, labels = c("A","B"), widths =c(1,1.5), common.legend = T)
+diversity_bracken_families <- ggarrange(diversity_bracken, Family_top15_plot, nrow = 1, labels = c("","C"), widths =c(2,1.2))
+diversity_bracken_families
+ggsave("diversity_bracken_families.png", plot = diversity_bracken_families, height = 6, width = 17.5)
+```

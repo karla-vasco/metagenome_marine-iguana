@@ -1,0 +1,146 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+```
+
+#Importing tables
+```{r}
+#Importing metadata
+metadata =read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metadata/metadata_marine-iguana_2021-04-05.csv", sep = ",", header = TRUE,  na.strings = "") 
+
+#Importing abundance table
+ARGs_main <- read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/resistome_smartchip/phyloseq/feature-table.txt", sep = "\t", header = TRUE,  na.strings = "", check.names = F) 
+
+ARGs_ids <- read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/resistome_smartchip/phyloseq/taxonomy.tsv", sep = "\t", header = TRUE,  na.strings = "", check.names = F) 
+
+taxa_main <- read.table("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/microbiome_16S/taxonomy_kraken2/genus_matrix.txt", sep = "\t", header = TRUE,  na.strings = "", check.names = F) 
+
+```
+
+
+#Merging smartchip IDs with abundance and filtering 16s abundance
+```{r}
+smartchip_id <- merge(ARGs_ids, ARGs_main, by="OTU_ID")
+
+#Eliminating 16S RNA abundances from table
+`%notin%` <- Negate(`%in%`)
+smartchip <- smartchip_id %>% filter(Type %notin% "16s_RNA_gene")
+
+#selecting only gene names and abundances
+smartchip <- smartchip %>% select(Gene, 5:72)
+```
+
+#Transposing smartchip matrix to a dataframe format
+```{r}
+library(tibble)
+#Transposing table and set the first row as column names
+smartchip <-  setNames(data.frame(t(smartchip[,-1])), smartchip[,1])
+
+#setting the row names as a column named "Name", so I can merge this table with the metadata by that variable 
+smartchip <- tibble::rownames_to_column(smartchip, var = "sampleid") %>% as_tibble()
+```
+
+#Merging metadata and smartchip results
+```{r}
+#Merging the transposed abundance tables with my metadata
+meta_smartchip <- merge(metadata,smartchip, by="sampleid")
+```
+
+#Taxonomic table at the genus level as a dataframe
+```{r}
+#Transposing table and set the first row as column names
+taxa <-  setNames(data.frame(t(taxa_main[,-1])), taxa_main[,1])
+
+#setting the row names as a column named "Name", so I can merge this table with the metadata by that variable 
+taxa <- tibble::rownames_to_column(taxa, var = "sampleid") %>% as_tibble() 
+```
+
+#Merging 16s RNA and smartchip abundance tables with metadata
+Joining the abundance tables with the metadata is useful to filter the samples by group or another characteristic.
+```{r}
+#Merging the transposed abundance tables with my metadata
+meta_taxa_args <- merge(meta_smartchip,taxa, by="sampleid")
+```
+
+
+#Making a nodes file for Gephi
+```{r}
+#Creating vector that includes the sample names, and total abundance per gene
+smartchip_nodes_ids <-  smartchip_id %>%
+  filter(Type %notin% "16s_RNA_gene") %>% 
+  mutate(Abundance = rowSums(.[5:72],na.rm=TRUE)) %>% #Numbers correspond to columns that include samples
+  select(Type, Class, Gene, Abundance)
+
+taxa_nodes_ids <- taxa_main %>% 
+  mutate(Abundance = rowSums(.[2:69]))  %>% 
+  mutate(Type = "Taxa") %>% 
+  mutate(Class = "Taxa") %>% 
+  dplyr::rename(Gene = Genus) %>% 
+  select(Type, Class, Gene, Abundance) 
+
+nodes_ids <- dplyr::union(smartchip_nodes_ids, taxa_nodes_ids)
+
+#Adding id numbers required for Gephi (corresponding to node id)
+nodes <- nodes_ids %>% 
+  mutate(id = 1:nrow(nodes_ids)) %>% #Number correspond to nrow(smartchip_nodes)
+  mutate(Label = Gene) %>% #Changing name of column Gene for Label, which is going to be the label observed in the network
+  select(Label, id, Abundance, everything()) #Reordering columns
+
+library(readr)
+#Saving final file as csv
+write_csv(nodes, "~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/network_nodes_all_samples.csv")
+```
+
+
+#Making an edges file for Gephi
+```{r}
+#Making a matrix with only the abundances of each gene (genes are columns, abundances are rows)
+smartchip_taxa_edges <- meta_taxa_args %>% 
+  select(14:578) %>% #columns containing taxa and ARGs (after metadata)
+  select(order(colnames(.))) #ordering alphabetically
+
+smartchip_taxa_edges[is.na(smartchip_taxa_edges)] <- 0 #replacing NAs with 0 to correctly calculate correlations
+
+
+library(Hmisc)
+#Calculating correlations
+correlations <-rcorr(as.matrix(smartchip_taxa_edges))
+
+#Making a function to change th matrix to a long format
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+
+#Making an edges table for Gephi
+edges = flattenCorrMatrix(correlations$r, correlations$P)
+
+#Renaming columns, adding correlation type, and filtering correlations higher than 0.75
+edges <- edges %>% 
+  dplyr::rename(Label = row, Target = column, Correlation = cor) %>% 
+  mutate(Type = "undirected") %>% 
+  filter(Correlation >= 0.75)
+
+#Changing labels for id numbers (corresponding to node id)
+edges_num <- left_join(edges, nodes, by = "Label") %>%
+  dplyr::rename(Source = id) %>% 
+  select(Source, Target, Correlation, Type.x) %>% 
+  dplyr::rename(Label = Target)
+
+edges_num <- left_join(edges_num,nodes, by = "Label") %>% 
+  select(Source, id, Correlation, Type.x) %>% 
+  dplyr::rename(Target = id, Type = Type.x)
+
+#Saving edges file as csv
+write_csv(edges, "~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/edges_labels_75_all_samples.csv")
+
+write_csv(edges_num, "~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/edges_75_all_samples.csv")
+```

@@ -1,0 +1,109 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#Importing tables
+```{r}
+library(readxl)
+
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun/taxonomy_kraken")
+
+#read in otu table
+family <- read_excel("bracken_abundance.xlsx", sheet = "family")
+phylum <- read_excel("bracken_abundance.xlsx", sheet = "phylum")
+genus <- read_excel("bracken_abundance.xlsx", sheet = "Genus")
+```
+
+#Ploting the 15 most abundant phyla
+```{r fig.height=7, fig.width=8}
+library(dplyr)
+library(ggpubr)
+phylum_count <- phylum %>% 
+  group_by(Phylum) %>% 
+  summarise(Mean = mean(fraction)) 
+
+top_15 <- top_n(phylum_count,15) 
+
+phylum_top15_plot <- phylum %>% 
+  dplyr::filter(Phylum %in% top_15$Phylum) %>%
+  group_by(Location, Sample_ID, Phylum) %>%
+  summarise(Count_taxa_ID = sum(fraction)) %>% 
+  group_by(Location, Phylum) %>%
+  summarise(Count_taxa_location = mean(Count_taxa_ID)) %>% 
+ ggbarplot(x= "Location", y = "Count_taxa_location", color = "Phylum", fill = "Phylum", 
+            palette = get_palette("simpsons",15), ylab = "Fraction", label.pos="out", position = position_stack(), xlab = "Location") + 
+  theme(legend.position = "right", axis.title.x = element_blank())
+
+phylum_top15_plot
+```
+
+#Ploting the 20 most abundant Family
+```{r fig.height=7, fig.width=8}
+family_count <- family %>% 
+  group_by(Family) %>% 
+  summarise(Mean = mean(fraction)) 
+
+top_15 <- top_n(family_count,20) 
+
+Family_top15_plot <- family %>% 
+  dplyr::filter(Family %in% top_15$Family) %>%
+  group_by(Location, Sample_ID, Family) %>%
+  summarise(Count_taxa_ID = sum(fraction)) %>% 
+  group_by(Location, Family) %>%
+  summarise(Count_taxa_location = mean(Count_taxa_ID)) %>% 
+ ggbarplot(x= "Location", y = "Count_taxa_location", color = "Family", fill = "Family", 
+            palette = get_palette("simpsons",20), ylab = "Fraction", label.pos="out", position = position_stack(), xlab = "Location") + 
+  theme(legend.position = "right", axis.title.x = element_blank())
+
+Family_top15_plot
+```
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/metagenome_composition")
+ggsave(plot = Family_top15_plot, "family_top20_metagenome.png", width = 8, height = 7)
+```
+
+#Ploting the 20 most abundant Genera
+```{r fig.height=7, fig.width=8}
+Genus_count <- genus %>% 
+  group_by(Genus) %>% 
+  summarise(Mean = mean(fraction)) 
+
+top_20 <- top_n(Genus_count,20) 
+
+Genus_top20_plot <- genus %>% 
+  dplyr::filter(Genus %in% top_20$Genus) %>%
+  group_by(Location, Sample_ID, Genus) %>%
+  summarise(Count_taxa_ID = sum(fraction)) %>% 
+  group_by(Location, Genus) %>%
+  summarise(Count_taxa_location = mean(Count_taxa_ID)) %>% 
+ ggbarplot(x= "Location", y = "Count_taxa_location", color = "Genus", fill = "Genus", 
+            palette = get_palette("rickandmorty",20), ylab = "Fraction", label.pos="out", position = position_stack(), xlab = "Location") + 
+  theme(legend.position = "right", axis.title.x = element_blank()) +
+  theme(legend.text = element_text(face = "italic"))
+
+
+Genus_top20_plot
+```
+
+#Ploting the 20 most abundant Family
+```{r fig.height=8, fig.width=15}
+Genus_count <- genus %>% 
+  group_by(Genus) %>% 
+  summarise(Mean = mean(fraction)) 
+
+top_20 <- top_n(Genus_count,20) 
+
+Genus_top20_plot_id <- genus %>% 
+  dplyr::filter(Genus %in% top_20$Genus) %>%
+  group_by(Location, Sample_ID, Genus) %>%
+  summarise(Count_taxa_ID = sum(fraction)) %>% 
+ ggbarplot(x= "Sample_ID", y = "Count_taxa_ID", color = "Genus", fill = "Genus", 
+            palette = get_palette("rickandmorty",20), ylab = "Fraction", label.pos="out", position = position_stack(), xlab = "Location") + 
+  theme(legend.position = "right", axis.title.x = element_blank()) +
+  theme(legend.text = element_text(face = "italic")) +
+  facet_grid(~Location, scale = "free", space = "free")  +
+  theme(axis.text.x = element_text(angle = 90, hjust=1))
+
+Genus_top20_plot_id
+```

@@ -1,0 +1,345 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+#Libraries needed
+```{r}
+library("phyloseq")
+library("ggplot2")
+library("ape")
+library("gridExtra")
+library("ggpubr")
+library("ggsignif")
+library(forcats)
+library(vegan)
+library(cowplot)
+```
+
+#Phyloseq object
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/microbiome_16S/qiime2_phyloseq")
+
+#read in otu table
+otu_table = read.table("feature-table.txt",sep="\t",row.names = 1,header = TRUE)
+otu_table=as.matrix(otu_table,rownames=TRUE)
+
+#read in taxonomy
+taxonomy = read.csv("taxonomy.tsv",sep="\t",row.names=1)
+taxonomy=as.matrix(taxonomy)
+
+#read in metadata
+metadata=read.table("metadata_marine-iguana_2021-04-08.csv", sep = ",", header = TRUE, row.names=1, na.strings = "") 
+metadata
+phy_tree = read_tree("tree.nwk")
+
+#import as phyloseq objects
+OTU = otu_table(otu_table,taxa_are_rows=TRUE)
+TAX = tax_table(taxonomy)
+META = sample_data(metadata)
+
+#Physeq object
+physeq=phyloseq(OTU,TAX,META,phy_tree)
+```
+
+#Fitering Chloroplast and Mitocondria OTUs
+```{r}
+`%notin%` <- Negate(`%in%`)
+
+#Filtering samples
+physeq_filtered = subset_taxa(physeq, Order %notin% "Chloroplast", Family %notin% "Mitochondria")
+physeq = physeq_filtered
+```
+
+#Alpha diversity
+```{r fig.width=10, fig.height=40}
+alpha_diversity <- estimate_richness(physeq, measures = c("Shannon", "Chao1"))
+df_alpha <- data.frame(alpha_diversity, sample_data(physeq))
+df <- reshape2::melt(df_alpha, measure.var=c("Shannon","Chao1"),id.vars=c("location","island"))
+df$value = as.numeric(df$value)
+
+#selecting the rows corresponding to each index from the main dataframe
+shannon = dplyr::filter(df, variable == "Shannon")
+chao = dplyr::filter(df, variable == "Chao1")
+```
+
+
+##Alpha diversity gut plot
+```{r}
+library(ggsci)
+
+my_comparisons <- list(c("Cabo Douglas", "Punta Espinoza"), c("Punta Espinoza", "Rabida"), c("Cabo Douglas", "Rabida"))
+
+##################### Running box plot #############################
+
+shannon_plot <- shannon %>% #shannon_box, chao1_box
+  ggplot(aes(x = location, y = value, fill = location)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(color="black", size=1, alpha=0.5) +
+  labs(y="Shannon", x="location") +
+  annotate("text", x = 2, y = 3.2, label = "Kruskal-Wallis, p = 0.0097", colour = "black") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + 
+  theme_classic() + 
+  theme(legend.position = "none",axis.title.x=element_blank()) + 
+  stat_compare_means(comparisons = my_comparisons, label.y = c(2.95,3,3.05), 
+                     tip.length=.02, hide.ns = F, size =3) +
+   scale_fill_aaas()
+shannon_plot
+
+chao_plot <- chao %>% #shannon_box, chao1_box
+  ggplot(aes(x = location, y = value, fill = location)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(color="black", size=1, alpha=0.5) +
+  labs(y="Chao1", x="location") +
+  annotate("text", x = 2, y = 130, label = "Kruskal-Wallis, p = 0.0032", colour = "black") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + 
+  theme_classic() + 
+  theme(legend.position = "none",axis.title.x=element_blank()) + 
+  stat_compare_means(comparisons = my_comparisons, label.y = c(105,110,115), 
+                     tip.length=.02, hide.ns = F, size =3) +
+   scale_fill_aaas()
+ chao_plot
+```
+
+##Arranging both diversity plots
+```{r}
+alpha_div_plots = ggarrange(shannon_plot,chao_plot,nrow = 2, ncol = 1, align="hv",labels = c("A","B")) 
+alpha_div_plots
+```
+
+#Beta Diversity
+
+##Weighted Unifrac stats 
+Analyzed by location
+```{r}
+## PERMANOVA
+library(vegan)
+wuinfrac_dist = phyloseq::distance(physeq, method="wunifrac") #RUN this only once because it takes a lot of time
+adonis_wunifrac = adonis(wuinfrac_dist ~ sample_data(physeq)$location)
+adonis_wunifrac
+
+## Significant PERMANOVA indicates that centroid (or spatial median) among groups is different and/or with-group dispersion among groups is different
+
+## PERMDISP
+wuni_disp <-betadisper(wuinfrac_dist, sample_data(physeq)$location, type=c("median"))
+anova(wuni_disp)
+
+## If PERMANOVA and PERMDISP are both significant, you can use plotting to tell if PERMANOVA was significant based on centroid (or spatial median)
+plot(wuni_disp)
+#?plot.betadisper
+
+## Would look better with higher replication for groups
+plot(wuni_disp, label = F)
+
+## Plot with 1 standard deviation ellipses around the group medians
+## sample size issue here, but you get the idea
+plot(wuni_disp, label = F, hull = F, ellipse = T)
+
+## Within-group dispersion that PERMDISP is testing
+boxplot(wuni_disp, las = 2, cex.lab=1.5)
+?boxplot
+
+## pairwise p-values
+TukeyHSD(wuni_disp)
+
+scores(wuni_disp, 1:4, display = "centroids")
+
+rda(otu_table)
+```
+
+##Weighted unifrac beta diversity plot with phyloseq
+Used to check the PCoA %
+```{r}
+beta_wu <- ordinate(physeq, "PCoA", "wunifrac")
+beta_wu_plot = plot_ordination(physeq, beta_wu, type="location", color="location", shape="location", title="PCoA Weighted Unifrac") + stat_ellipse(type = "t", linetype = 3) + stat_ellipse(type = "t") + theme_bw()+labs(colour = "location") #To add arrows https://neavemj.github.io/posts/coralMicrobiome
+beta_wu_plot
+```
+
+#Final weighted unifrac plot
+```{r}
+label_perm <- expression(paste("PERMANOVA, ",R^2 ,"= 0.16, ", paste(italic('p')),"=0.001"))
+
+beta_scatter = as.data.frame(beta_wu[["vectors"]])
+beta_meta = merge(beta_scatter,metadata,by = 0,all=F)
+pmain_wuF = ggscatter(beta_meta, x = "Axis.1", y = "Axis.2", color = "location", palette = "aaas",ellipse = TRUE, ellipse.level=.5,mean.point = F, mean.point.size = 5, star.plot = F) +labs(x = "PCoA 1 (40.2%) ", y = "PCoA 2 (19.3%)", colour = "location", fill = "location") +annotate("text", x = -0.04, y = -0.06, label = label_perm, colour = "black")
+pmain_wuF
+```
+
+##Bray-Curtis dissimilarity statistics
+```{r}
+## PERMANOVA
+library(vegan)
+bray_dist = phyloseq::distance(physeq, method="bray") #RUN this only once because it takes a lot of time
+adonis_bray = adonis(bray_dist ~ sample_data(physeq)$location)
+adonis_bray
+
+## Significant PERMANOVA indicates that centroid (or spatial median) among groups is different and/or with-group dispersion among groups is different
+
+## PERMDISP
+bray_disp <-betadisper(wuinfrac_dist, sample_data(physeq)$location, type=c("median"))
+anova(bray_disp)
+
+## If PERMANOVA and PERMDISP are both significant, you can use plotting to tell if PERMANOVA was significant based on centroid (or spatial median)
+plot(bray_disp)
+#?plot.betadisper
+
+## Would look better with higher replication for groups
+plot(bray_disp, label = F)
+
+## Plot with 1 standard deviation ellipses around the group medians
+## sample size issue here, but you get the idea
+plot(bray_disp, label = F, hull = F, ellipse = T)
+
+## Within-group dispersion that PERMDISP is testing
+boxplot(bray_disp, las = 2, cex.lab=1.5)
+?boxplot
+
+## pairwise p-values
+TukeyHSD(bray_disp)
+
+scores(bray_disp, 1:4, display = "centroids")
+```
+
+##Bray beta diversity plot
+```{r}
+beta_bray <- ordinate(physeq, "PCoA", "bray") #RUN this only ONCE because it takes a lot of time
+beta_bray_plot = plot_ordination(physeq, beta_bray, type="location", color="location", shape="location", title="PCoA Weighted Unifrac") + stat_ellipse(type = "t", linetype = 3) + stat_ellipse(type = "t") + theme_bw()+labs(colour = "location") #To add arrows https://neavemj.github.io/posts/coralMicrobiome
+beta_bray_plot
+```
+
+##Bray-Curtis final plot
+```{r}
+label_perm <- expression(paste("PERMANOVA, ",R^2 ,"= 0.12, ", paste(italic('p')),"=0.001"))
+#library(lemon)
+
+beta_scatter = as.data.frame(beta_bray[["vectors"]])
+beta_meta = merge(beta_scatter,metadata,by = 0,all=F)
+pmain_brayF = ggscatter(beta_meta, x = "Axis.1", y = "Axis.2", color = "location", palette = "aaas",ellipse = TRUE, ellipse.level=.5,mean.point = F, mean.point.size = 5, star.plot = F) +labs(x = "PCoA 1 (24.1%) ", y = "PCoA 2 (20.6%)", colour = "location", fill = "location")+ annotate("text", x = -0.12, y = -0.2, label = label_perm, colour = "black")
+pmain_brayF
+```
+
+##Arranging both diversity plots into one
+```{r}
+beta_div_plots = ggarrange(pmain_brayF,pmain_wuF,nrow = 2, ncol = 1, align="hv", common.legend = TRUE, labels = c("C","D")) 
+beta_div_plots
+```
+
+#Diversity plot
+Alpha and beta diversity plots arranged in one figure
+```{r fig.width=10, fig.height=7}
+diversity = ggarrange(alpha_div_plots, beta_div_plots, nrow = 1, ncol = 2, widths = c(1,1.5))
+diversity
+```
+
+#Saving diversity plot as png format
+```{r}
+ggsave(plot = diversity, "~/OneDrive - Michigan State University/Zhang_lab/Marine_Iguana/figures-plots/microbiome/16S_diversity_iguana.png", width = 10.5, height = 7)
+```
+
+
+#COMPOSITION
+##Phylum data frame
+Clustering the abundance by sample at the Phylum level and transforming to relative abundance
+```{r}
+glom_phylum <- tax_glom(physeq, taxrank = 'Phylum')
+data_phylum <- psmelt(glom_phylum) # create dataframe from phyloseq object
+
+library(dplyr)
+data_phylum_rel = data_phylum %>% group_by(Sample) %>% mutate(relAbundBySample = Abundance / sum(Abundance)*100) #Converting counts to relative abundance %
+```
+
+###Phylum Barplot
+```{r}
+#order of samples (otherwise it's based on the most abundant phyla per sample)
+sample_names <- sort(unique(data_phylum$Sample))
+
+phylum_ab <- ggbarplot(data=data_phylum_rel, x= "Sample", y = "relAbundBySample", color = "Phylum", fill = "Phylum", palette = "simpsons", ylab = "Relative Abundance", order = sample_names) +labs(colour = "Phylum", fill = "Phylum") + facet_wrap(~location, scales = "free_x") + theme(axis.text.x = element_text(angle = 90))
+
+phylum_ab
+```
+
+###Phylum proportions
+```{r}
+phylum_proportions <- data_phylum_rel %>% 
+  select(Phylum, relAbundBySample) %>% 
+  group_by(Phylum) %>% 
+  summarise(Proportion = mean(relAbundBySample)) 
+phylum_proportions
+```
+
+##Family data frame
+```{r}
+glom_family <- tax_glom(physeq, taxrank = 'Family')
+glom_family_rel = transform_sample_counts(glom_family, function(x) x/sum(x))
+top20 <- names(sort(taxa_sums(glom_family), decreasing=TRUE)[1:20])
+top20 #shows 20 results
+family_top20 = prune_taxa(top20, glom_family_rel)
+data_family <- psmelt(family_top20) # create dataframe from phyloseq object
+```
+
+###Family barplot
+```{r fig.width=20, fig.height=5}
+sample_names <- sort(unique(data_family$Sample))
+
+family_ab <- ggbarplot(data=data_family, x= "Sample", y = "Abundance", color = "Family", fill = "Family", palette = get_palette("rickandmorty",20), ylab = "Relative Abundance", order = sample_names) +labs(colour = "Family", fill = "Family", position = position_fill()) + facet_grid(~location, scales = "free_x", space = "free") + theme(axis.text.x = element_text(angle = 90))
+
+family_ab
+```
+
+###Family proportions
+```{r}
+family_proportions <- data_family %>% 
+  select(Family, Abundance) %>% 
+  group_by(Family) %>% 
+  summarise(Proportion = mean(Abundance)) 
+```
+
+###Genus data frame
+```{r}
+glom_genus <- tax_glom(physeq, taxrank = 'Genus')
+top20 <- names(sort(taxa_sums(glom_genus), decreasing=TRUE)[1:20])
+top20 #shows 20 results
+
+glom_genus_rel = transform_sample_counts(glom_genus, function(x) x/sum(x))
+
+genus_top20 = prune_taxa(top20, glom_genus_rel)
+data_genus <- psmelt(genus_top20) # create dataframe from phyloseq object
+```
+
+###Genus barplot
+```{r fig.width=20, fig.height=5}
+sample_names <- sort(unique(data_genus$Sample))
+
+genus_ab <- ggbarplot(data=data_genus, x= "Sample", y = "Abundance", color = "Genus", fill = "Genus", palette = get_palette("simpsons",21), ylab = "Relative Abundance", order = sample_names,, position = position_stack()) +labs(colour = "Genus", fill = "Genus") + facet_grid(~location, scales = "free_x", space = "free") + theme(axis.text.x = element_text(angle = 90)) +  theme(legend.text = element_text(face = "italic"))
+
+genus_ab
+```
+
+###Genus proportion
+```{r}
+genus_proportions <- data_genus %>% 
+  select(Genus, Abundance) %>% 
+  group_by(Genus) %>% 
+  summarise(Proportion = mean(Abundance)) 
+```
+
+##Final composition plot with Family and genus relative abundance
+```{r fig.width=20, fig.height=10}
+composition_barplots <- ggarrange(family_ab,genus_ab, nrow = 2, labels = c("A","B"))
+composition_barplots
+```
+
+##Saving composition plot as png
+```{r}
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/microbiome")
+ggsave("composition_marine-iguana_qiime.png", plot = composition_barplots, width = 20, height = 10)
+```
+
+
+#Saving composition plots by separate
+```{r}
+library(ggplot2)
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/microbiome")
+ggsave("Genus_marine-iguana_qiime.png", plot = genus_ab, width = 15, height = 5)
+ggsave("Family_marine-iguana_qiime.png", plot = family_ab, width = 15, height = 5)
+ggsave("Phylum_marine-iguana_qiime.png", plot = phylum_ab, width = 15, height = 5)
+```

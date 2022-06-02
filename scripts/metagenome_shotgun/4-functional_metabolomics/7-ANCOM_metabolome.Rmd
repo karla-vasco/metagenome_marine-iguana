@@ -1,0 +1,260 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#ANCOM-BC
+https://github.com/FrederickHuangLin/ANCOM-BC-Code-Archive
+
+##Installing ANCOMBC if necessary
+```{r}
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ANCOMBC")
+```
+
+##Activating libraries
+```{r}
+library(microbiome)
+library(nloptr)
+library(ANCOMBC)
+```
+
+##Importing tables
+```{r echo = FALSE}
+library(dplyr)
+library(readxl)
+
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/functional_HUMANN")
+
+#read in otu table
+otu_table = read_excel("humman_iguanas.xlsx", sheet="otu_table_genus")
+
+library(tibble)
+otu_table <- otu_table %>% remove_rownames %>% column_to_rownames(var="OTU_ID")
+otu_table=as.matrix(otu_table)
+otu_table <- otu_table*10^9
+mode(otu_table) <- "integer"
+
+#read in taxonomy
+taxonomy = read_excel("humman_iguanas.xlsx", sheet="taxonomy_genus")
+taxonomy <- taxonomy %>% remove_rownames %>% column_to_rownames(var="OTU_ID")
+taxonomy=as.matrix(taxonomy)
+
+#read in metadata
+metadata <- read_excel("humman_iguanas.xlsx", sheet = "metadata")
+metadata <- metadata %>% remove_rownames %>% column_to_rownames(var="sample_ID")
+```
+
+##Generating a phyloseq object
+```{r echo=FALSE}
+library("phyloseq")
+
+#import as phyloseq objects
+OTU = otu_table(otu_table,taxa_are_rows=TRUE)
+TAX = tax_table(taxonomy)
+META = sample_data(metadata)
+
+# Sanity checks for consistent OTU names
+taxa_names(TAX)
+taxa_names(OTU)
+
+# Same sample names
+sample_names(OTU)
+sample_names(META)
+
+#Final phyloseq output is named as physeq
+physeq=phyloseq(OTU,TAX,META)
+```
+
+##ANCOMBC pathway
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq, "Description")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "Island",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Island", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "Island")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/functional_HUMANN/ANCOM_pathway_island.csv",sep = ",", row.names = F)
+```
+
+##Filtering samples per two sites
+```{r}
+physeq_CD_RA <- subset_samples(physeq, Location%in%c("Cabo Douglas", "Rabida"))
+physeq_CD_PE <- subset_samples(physeq, Location%in%c("Cabo Douglas", "Punta Espinoza"))
+physeq_RA_PE <- subset_samples(physeq, Location%in%c("Punta Espinoza", "Rabida"))
+```
+
+#ANCOM CD PE
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_PE, "Description")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "Location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/functional_HUMANN/ANCOM_pathway_CD_PE.csv",sep = ",", row.names = F)
+```
+
+#ANCOM CD RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_CD_RA, "Description")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "Location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/functional_HUMANN/ANCOM_pathway_CD_RA.csv",sep = ",", row.names = F)
+```
+
+#ANCOM PE RA
+```{r}
+# Aggregate the abundance to the "Gene Type" level
+physeq = aggregate_taxa(physeq_RA_PE, "Description")
+
+#ANCOMBC analysis comparison between treatment groups
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = TRUE)
+
+#ANCOMBC results as a list
+res = out$res
+
+#ANCOMBC results as a table
+ancom_results = res %>% 
+  as_tibble()
+
+#Filtering only significant results
+ancom_signif_list <- ancom_results %>% 
+  dplyr::filter(p_val <= 0.05)
+
+#Adding feature names to the table
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "Location")
+
+#Exporting significant results as a csv file
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/functional_HUMANN/ANCOM_pathway_PE_RA.csv",sep = ",", row.names = F)
+```
+
+```{r}
+glom_path <- tax_glom(physeq, taxrank = 'Description')
+glom_path <- psmelt(glom_path) # create dataframe from phyloseq object
+
+library(dplyr)
+data_path_rel = glom_path %>% group_by(Sample) %>% mutate(relAbundBySample = Abundance / sum(Abundance)*100) #Converting counts to relative abundance %
+```
+
+```{r}
+mean_abn_path_all <- data_path_rel %>%
+  group_by(Description) %>% 
+  summarise(Mean_abn = mean(relAbundBySample))
+
+top20 <- top_n(mean_abn_path_all, 20) 
+```
+
+```{r}
+top20_path_plot <- mean_abn_path_all %>% 
+  filter(Description%in%top20$Description) %>% 
+  ggbarplot(x= "Description", y = "Mean_abn", color = "Location", fill = "Location", palette = get_palette("simpsons",15), ylab = "Mean abundance", label.pos="out", position = position_stack(), xlab = "Pathway", orientation = "horiz") + theme(legend.position = "right") +labs(colour = "Location", fill = "Location")
+top20_path_plot
+```
+
+```{r}
+mean_abn_path <- data_path_rel %>% 
+  filter(Description%in%c('(5Z)-dodecenoate biosynthesis I', '6-hydroxymethyl-dihydropterin diphosphate biosynthesis I', 'ADP-L-glycero-&beta;-D-manno-heptose biosynthesis', 'assimilatory sulfate reduction I', 'assimilatory sulfate reduction IV', 'glucose and glucose-1-phosphate degradation', 'hexitol fermentation to lactate, formate, ethanol and acetate', 'L-arginine degradation XIII (reductive Stickland reaction)', 'lactose and galactose degradation I', 'pentose phosphate pathway', 'phosphatidylcholine acyl editing', "pyridoxal 5'-phosphate biosynthesis I", 'superpathway of L-methionine biosynthesis (by sulfhydrylation)', "superpathway of pyridoxal 5'-phosphate biosynthesis and salvage", 'superpathway of sulfate assimilation and cysteine biosynthesis', 'tRNA processing')) %>% 
+  group_by(Location, Description) %>% 
+  summarise(Mean_abn = mean(relAbundBySample))
+
+mean_abn_path
+```
+
+```{r fig.width=10}
+library(ggpubr)
+taxa_path_ab <- mean_abn_path %>% 
+  ggbarplot(x= "Description", y = "Mean_abn", color = "Location", fill = "Location", palette = "aaas", ylab = "Mean Abundance", orientation = "horiz")  +labs(colour = "Location", fill = "Location")  + theme(axis.title.y = element_blank()) #+ facet_wrap(~sample_Type, scales = "free_x")
+taxa_path_ab
+```
+```{r}
+ggsave(plot = taxa_path_ab, "~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/figures-plots/pathways/ANCOMBC_sig_path.png", width = 12, height = 8)
+```
+
+```{r fig.width=10}
+library(ggpubr)
+taxa_path_ab <- data_path_rel %>% 
+  filter(Description%in%c('(5Z)-dodecenoate biosynthesis I', '6-hydroxymethyl-dihydropterin diphosphate biosynthesis I', 'ADP-L-glycero-&beta;-D-manno-heptose biosynthesis', 'assimilatory sulfate reduction I', 'assimilatory sulfate reduction IV', 'glucose and glucose-1-phosphate degradation', 'hexitol fermentation to lactate, formate, ethanol and acetate', 'L-arginine degradation XIII (reductive Stickland reaction)', 'lactose and galactose degradation I', 'pentose phosphate pathway', 'phosphatidylcholine acyl editing', 'pyridoxal 5-phosphate biosynthesis I', 'superpathway of L-methionine biosynthesis (by sulfhydrylation)', 'superpathway of pyridoxal 5-phosphate biosynthesis and salvage', 'superpathway of sulfate assimilation and cysteine biosynthesis', 'tRNA processing')) %>% 
+  ggbarplot(x= "Description", y = "relAbundBySample", color = "Location", fill = "Location", palette = "aaas", ylab = "Abundance", orientation = "horiz")  +labs(colour = "Location", fill = "Location")  + theme(axis.title.y = element_blank()) #+ facet_wrap(~sample_Type, scales = "free_x")
+taxa_path_ab
+```
+```{r fig.width=15}
+library(ggpubr)
+taxa_path_ab <- data_path_rel %>% 
+  filter(Description%in%c('(5Z)-dodecenoate biosynthesis I', '6-hydroxymethyl-dihydropterin diphosphate biosynthesis I', 'ADP-L-glycero-&beta;-D-manno-heptose biosynthesis', 'assimilatory sulfate reduction I', 'assimilatory sulfate reduction IV', 'glucose and glucose-1-phosphate degradation', 'hexitol fermentation to lactate, formate, ethanol and acetate', 'L-arginine degradation XIII (reductive Stickland reaction)', 'lactose and galactose degradation I', 'pentose phosphate pathway', 'phosphatidylcholine acyl editing', 'pyridoxal 5-phosphate biosynthesis I', 'superpathway of L-methionine biosynthesis (by sulfhydrylation)', 'superpathway of pyridoxal 5-phosphate biosynthesis and salvage', 'superpathway of sulfate assimilation and cysteine biosynthesis', 'tRNA processing')) %>% 
+  ggboxplot(x= "Description", y = "relAbundBySample", color = "Location", fill = "Location", palette = "aaas", ylab = "Abundance", orientation = "horiz", alpha = 0.5, add = "jitter")  +labs(colour = "Location", fill = "Location")  + theme(axis.title.y = element_blank()) #+ facet_wrap(~sample_Type, scales = "free_x")
+taxa_path_ab
+```

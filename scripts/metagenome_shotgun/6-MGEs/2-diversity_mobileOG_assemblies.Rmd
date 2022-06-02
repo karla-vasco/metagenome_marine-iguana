@@ -1,0 +1,626 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#Importing tables
+```{r}
+library(readxl)
+library(tibble)
+library(dplyr)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun")
+metadata <- read_excel("contigs_iguanas_tables.xlsx", sheet = "metadata") 
+mobileOG <- read_excel("contigs_iguanas_tables.xlsx", sheet = "mobileOG")
+```
+
+#OTU TABLE raw reads
+```{r}
+otu_table <- read_excel("contigs_iguanas_tables.xlsx", sheet = "MGE_abundance") %>% tibble::remove_rownames() %>%  tibble::column_to_rownames("mobileOG_id")
+otu_table[is.na(otu_table)] = 0
+otu_table=as.matrix(otu_table,rownames=TRUE)
+```
+
+#OTU TABLE normalized by the number of bacterial reads
+```{r}
+norm_abundance <- merge(mobileOG, metadata, by = "sample_id") %>% 
+  select(sample_id, mobileOG_id, MGE_count, Bacteria_bracken) %>% 
+  group_by(sample_id, mobileOG_id) %>% 
+  summarise(norm.abundance = sum(MGE_count/Bacteria_bracken)) %>% 
+  as.data.frame()
+
+library(tidyr)
+mobileOG.norm.mx <-spread(norm_abundance, key = sample_id, value = norm.abundance) %>%  tibble::remove_rownames() %>%  tibble::column_to_rownames("mobileOG_id")
+  
+mobileOG.norm.mx[is.na(mobileOG.norm.mx)] = 0
+mobileOG.norm.mx=as.matrix(mobileOG.norm.mx,rownames=T)
+mobileOG.norm.mx <- mobileOG.norm.mx*10^32
+```
+#Calculuating normalize abundance
+```{r}
+merge(mobileOG, metadata, by = "sample_id") %>% 
+  select(sample_id, mobileOG_id,Location, MGE_count, Bacteria_bracken) %>% 
+  group_by(sample_id, Location) %>% 
+  summarise(norm.abundance = sum(MGE_count/Bacteria_bracken*100)) %>% 
+  as.data.frame() %>% 
+  group_by(Location) %>% 
+  summarise(mean_ab = mean(norm.abundance), sd = sd(norm.abundance))
+```
+
+```{r}
+my_comparisons <- list(c("Cabo Douglas", "Punta Espinoza"), c("Punta Espinoza", "Rabida"), c("Cabo Douglas", "Rabida"))
+
+norm_ab_mge_plot <- merge(mobileOG, metadata, by = "sample_id") %>% 
+ select(sample_id, mobileOG_id,Location, MGE_count, Bacteria_bracken) %>% 
+  group_by(sample_id, Location) %>% 
+  summarise(norm.abundance = sum(MGE_count/Bacteria_bracken*100)) %>% 
+  mutate(Type = "MGEs") %>% 
+  as.data.frame() %>% 
+  ggboxplot(x = "Location", y = "norm.abundance", add = "jitter", palette = "aaas", fill = "Location", color  = "Location", ylab = F, alpha = 0.5, xlab = F, facet.by = "Type") +
+  stat_compare_means(comparisons = my_comparisons, 
+                     tip.length=.02, hide.ns = F, size = 3.5) +
+  stat_compare_means(label.y.npc = "bottom", label.x.npc = .3)
+norm_ab_mge_plot
+```
+```{r}
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+ggsave("mobileOG_norm.abundance.png", plot = norm_ab_plot, width = 6, height = 4)
+```
+
+#Making taxonomy table
+```{r}
+taxonomy <- mobileOG %>% select(mobileOG_id,MGE_Type, MGE_Mechanism,MGE_class,MGE_Gene) %>% 
+  distinct() %>% #Remove duplicate rows
+  arrange(mobileOG_id) %>% #organize names alphabetically
+  rename(OTU = mobileOG_id,Type = MGE_Type,Mechanism = MGE_Mechanism,Class = MGE_class, Gene = MGE_Gene) %>% #Rename columns
+  tibble::remove_rownames() %>%  tibble::column_to_rownames("OTU")
+taxonomy=as.matrix(taxonomy,rownames=TRUE)
+```
+
+#Phyloseq object
+```{r}
+library(phyloseq)
+#import as phyloseq objects
+OTU = otu_table(mobileOG.norm.mx,taxa_are_rows=T)
+TAX = tax_table(taxonomy)
+META = metadata %>% tibble::remove_rownames() %>% tibble::column_to_rownames("sample_id") %>% sample_data()
+
+# Sanity checks for consistent OTU names
+taxa_names(TAX)
+taxa_names(OTU)
+
+# Same sample names
+sample_names(OTU)
+sample_names(META)
+
+#(tree was already imported as a phyloseq object)
+physeq=phyloseq(OTU,TAX,META)
+```
+
+#Alpha diversity
+```{r fig.width=10, fig.height=40}
+alpha_diversity <- estimate_richness(physeq, measures = c("Shannon", "Observed", "Chao1"))
+df_alpha <- data.frame(alpha_diversity, sample_data(physeq))
+alpha_table <- reshape2::melt(df_alpha, measure.var=c("Shannon","Observed","Chao1"),id.vars=c("Location","Island")) %>% 
+  rename(Index = variable)
+alpha_table$value = as.numeric(alpha_table$value)
+```
+
+```{r fig.height=5, fig.width=14}
+library(ggplot2)
+library(ggpubr)
+library(ggsci)
+
+my_comparisons <- list(c("Cabo Douglas", "Punta Espinoza"), c("Punta Espinoza", "Rabida"), c("Cabo Douglas", "Rabida"))
+
+##################### Running box plot #############################
+alpha_plot <- alpha_table %>% 
+  filter(Index %in% c("Shannon","Chao1")) %>% #shannon_box, chao1_box
+  ggboxplot(x = "Location", y = "value", fill = "Location", add = "jitter", alpha=0.5, color = "Location", ylab = "Value", facet.by = "Index", scales ="free_y", 
+       #     panel.labs = list(Index = c("Shannon; p = 0.0023", "Observed, p = 0035", "Chao 1, p = 0.041"))
+            ) +
+  theme(legend.position = "none",axis.title.x=element_blank()) + 
+  stat_compare_means(comparisons = my_comparisons, 
+                     tip.length=.02, hide.ns = F) +
+  stat_compare_means(label.y.npc = "bottom", label.x.npc = .2) +
+   scale_fill_aaas() + scale_color_aaas()
+alpha_plot
+```
+
+
+#Bray statistics
+```{r}
+## PERMANOVA
+library(vegan)
+bray_dist = phyloseq::distance(physeq, method="bray") #RUN this only once because it takes a lot of time
+adonis_bray = adonis(bray_dist ~ sample_data(physeq)$Location)
+adonis_bray
+
+## Significant PERMANOVA indicates that centroid (or spatial median) among groups is different and/or with-group dispersion among groups is different
+
+## PERMDISP
+bray_disp <-betadisper(bray_dist, sample_data(physeq)$Location, type=c("median"))
+anova(bray_disp)
+
+
+## If PERMANOVA and PERMDISP are both significant, you can use plotting to tell if PERMANOVA was significant based on centroid (or spatial median)
+plot(bray_disp, label = T, hull = F, ellipse = T)
+
+## Within-group dispersion that PERMDISP is testing
+boxplot(bray_disp, las = 2, cex.lab=1.5)
+?boxplot
+
+## pairwise p-values
+TukeyHSD(bray_disp)
+
+scores(bray_disp, 1:4, display = "centroids")
+```
+
+##Bray beta diversity plot
+```{r}
+label_perm <- expression(paste("PERMANOVA, ",R^2 ,"= 0.13, ", paste(italic('p')),"=0.001"))
+
+beta_bray <- ordinate(physeq, "PCoA", "bray") #RUN this only ONCE because it takes a lot of time
+beta_bray_plot = plot_ordination(physeq, beta_bray, type="Location", color="Location") + 
+  stat_ellipse(type = "t", linetype = 1, level = .7) + 
+  theme_classic()+
+  labs(colour = "Location") +#To add arrows https://neavemj.github.io/posts/coralMicrobiome
+  annotate("text", x = 0, y = 0.3, label = label_perm, colour = "black") +
+  scale_color_aaas()
+
+beta_bray_plot
+```
+
+```{r fig.width=7, fig.height=5}
+diversity = ggarrange(alpha_plot, beta_bray_plot, nrow = 2, ncol = 1, labels = c("A","B"))
+diversity
+```
+```{r}
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/resistome")
+ggsave("mobileOG_assembly_diversity_norm.bacteria.png", plot = diversity, width = 9, height = 8)
+```
+
+#Core resistome
+```{r}
+library(microbiome)
+# Calculate compositional version of the data
+# (relative abundances)
+physeq_ARG <- tax_glom(physeq, taxrank = 'Gene')
+pseq.rel <- microbiome::transform(physeq_ARG, transform = "compositional", target = "OTU",)
+#If you only need the names of the core taxa, do as follows. This returns the taxa that exceed the given prevalence and detection thresholds.
+core.taxa.standard <- core_members(pseq.rel, detection = 0, prevalence = 50/100)
+#A full phyloseq object of the core microbiota is obtained as follows:
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .5)
+#We can also collapse the rare taxa into an “Other” category
+pseq.core2 <- aggregate_rare(pseq.rel, "Gene", detection = 0, prevalence = .5)
+#Retrieving the core taxa names from the phyloseq object:
+core.taxa <- taxa(pseq.core)
+core.taxa
+```
+
+#Core abundance and diversity
+```{r}
+#Total core abundance in each sample (sum of abundances of the core members):
+
+core.abundance <- sample_sums(core(pseq.rel, detection = .01, prevalence = .95))
+core.abundance
+```
+
+#Line plots
+```{r}
+# With compositional (relative) abundances
+det <- c(0, 0.1, 0.5, 2, 5, 20)/100
+prevalences <- seq(.05, 1, .05)
+ #ggplot(d) + geom_point(aes(x, y)) + scale_x_continuous(trans="log10", limits=c(NA,1))
+
+
+plot_core(pseq.rel, 
+          prevalences = prevalences, 
+          detections = det, 
+          plot.type = "lineplot") + 
+  xlab("Relative Abundance (%)")
+```
+#Alpha diversity
+```{r fig.width=10, fig.height=40}
+pseq.rel_transformed <- transform_sample_counts(pseq.rel, function(x) x*10^16)
+alpha_diversity <- estimate_richness(pseq.rel_transformed, measures = c("Shannon", "Observed", "Chao1"))
+df_alpha <- data.frame(alpha_diversity, sample_data(pseq.rel_transformed))
+alpha_table <- reshape2::melt(df_alpha, measure.var=c("Shannon","Observed","Chao1"),id.vars=c("Location","Island")) %>% 
+  rename(Index = variable)
+alpha_table$value = as.numeric(alpha_table$value)
+```
+#Alpha diversity
+```{r fig.width=10, fig.height=40}
+pseq.rel_transformed <- transform_sample_counts(pseq.rel, function(x) x*10^16)
+alpha_diversity <- estimate_richness(pseq.rel_transformed, measures = c("Shannon", "Observed", "Chao1"))
+df_alpha <- data.frame(alpha_diversity, sample_data(pseq.rel_transformed))
+alpha_table <- reshape2::melt(df_alpha, measure.var=c("Shannon","Observed","Chao1"),id.vars=c("Location","Island")) %>% 
+  rename(Index = variable)
+alpha_table$value = as.numeric(alpha_table$value)
+```
+
+```{r fig.height=5, fig.width=14}
+library(ggplot2)
+library(ggpubr)
+library(ggsci)
+
+my_comparisons <- list(c("Cabo Douglas", "Punta Espinoza"), c("Punta Espinoza", "Rabida"), c("Cabo Douglas", "Rabida"))
+
+##################### Running box plot #############################
+alpha_plot <- alpha_table %>% #shannon_box, chao1_box
+  filter(Index %in% c("Shannon","Chao1")) %>% 
+  ggboxplot(x = "Location", y = "value", fill = "Location", add = "jitter", alpha=0.5, color = "Location", ylab = "Value", facet.by = "Index", scales ="free_y", 
+       #     panel.labs = list(Index = c("Shannon; p = 0.0023", "Observed, p = 0035", "Chao 1, p = 0.041"))
+            ) +
+  theme(legend.position = "none",axis.title.x=element_blank()) + 
+  stat_compare_means(comparisons = my_comparisons, 
+                     tip.length=.02, hide.ns = F) +
+  stat_compare_means(label.y.npc = "bottom", label.x.npc = .3) +
+   scale_fill_aaas() + scale_color_aaas()
+alpha_plot
+```
+
+
+#Bray statistics core
+```{r}
+## PERMANOVA
+library(vegan)
+bray_dist = phyloseq::distance(pseq.rel, method="bray") #RUN this only once because it takes a lot of time
+adonis_bray = adonis(bray_dist ~ sample_data(pseq.rel)$Location)
+adonis_bray
+
+## Significant PERMANOVA indicates that centroid (or spatial median) among groups is different and/or with-group dispersion among groups is different
+
+## PERMDISP
+bray_disp <-betadisper(bray_dist, sample_data(pseq.rel)$Location, type=c("median"))
+anova(bray_disp)
+
+
+## If PERMANOVA and PERMDISP are both significant, you can use plotting to tell if PERMANOVA was significant based on centroid (or spatial median)
+plot(bray_disp, label = T, hull = F, ellipse = T)
+
+## Within-group dispersion that PERMDISP is testing
+boxplot(bray_disp, las = 2, cex.lab=1.5)
+?boxplot
+
+## pairwise p-values
+TukeyHSD(bray_disp)
+
+scores(bray_disp, 1:4, display = "centroids")
+```
+
+##Bray beta diversity plot
+```{r}
+label_perm <- expression(paste("PERMANOVA, ",R^2 ,"= 0.16, ", paste(italic('p')),"=0.001"))
+
+beta_bray <- ordinate(pseq.rel, "PCoA", "bray") #RUN this only ONCE because it takes a lot of time
+beta_bray_plot = plot_ordination(pseq.rel, beta_bray, type="Location", color="Location") + 
+  stat_ellipse(type = "t", linetype = 1) + 
+  theme_classic()+
+  labs(colour = "Location") +#To add arrows https://neavemj.github.io/posts/coralMicrobiome
+  annotate("text", x = 0, y = 0.15, label = label_perm, colour = "black") +
+  scale_color_aaas()
+
+beta_bray_plot
+```
+
+```{r fig.width=8, fig.height=5}
+diversity = ggarrange(alpha_plot, beta_bray_plot, nrow = 2, ncol = 1, labels = c("A","B"))
+diversity
+```
+
+```{r}
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/resistome")
+ggsave("mobileOG_assembly_diversity_core.png", plot = diversity, width = 9, height = 8)
+```
+
+
+```{r}
+core_df <- psmelt(pseq.core) # create dataframe from phyloseq object
+```
+
+```{r}
+core_df %>% 
+  group_by(Gene, Location) %>% 
+  summarise(mean_presence = mean(Abundance))
+```
+#ANCOM-BC
+
+```{r}
+library(microbiome)
+library(nloptr)
+library(ANCOMBC)
+```
+
+#Filtering samples and taxa for further analyses
+```{r}
+physeq_Type = phyloseq::tax_glom(physeq, taxrank = "Type")
+physeq_Gene = phyloseq::tax_glom(physeq, taxrank = "Gene")
+```
+
+#Type
+```{r}
+physeq <- physeq_Type
+`%notin%` <- Negate(`%in%`)
+physeq_CD_RA = subset_samples(physeq, Location %notin%"Punta Espinoza")
+physeq_CD_PE = subset_samples(physeq, Location %notin% "Rabida")
+physeq_PE_RA = subset_samples(physeq, Location %notin% "Cabo Douglas")
+```
+
+
+#Fernandina vs. Rabida
+```{r}
+out = ancombc(phyloseq = physeq, formula = "Island",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Island", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- merge(ancom_signif_names,physeq@tax_table, by = "row.names")
+#write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/MGEs/ANCOMBC_Fernandina_vs_Rabida_TYPE.csv",sep = ",", row.names = F) #Writing `sigtab` to my tables
+```
+
+#Cabo Douglas vs. Rabida
+```{r}
+physeq <- physeq_CD_RA
+
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- merge(ancom_signif_names,physeq@tax_table, by = "row.names")
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/MGEs/ANCOMBC_CD_vs_RA_TYPE.csv",sep = ",", row.names = F)
+```
+
+
+#Cabo Douglas vs. Punta Espinoza
+```{r}
+physeq <- physeq_CD_PE
+
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- merge(ancom_signif_names,physeq@tax_table, by = "row.names")
+#write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/MGEs/ANCOMBC_CD_vs_PE_TYPE.csv",sep = ",", row.names = F)
+```
+
+
+#Rabida vs. Punta Espinoza
+```{r}
+physeq <- physeq_PE_RA
+
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- merge(ancom_signif_names,physeq@tax_table, by = "row.names")
+#write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/MGEs/ANCOMBC_RA_vs_PE_TYPE.csv",sep = ",", row.names = F)
+```
+
+#Gene
+```{r}
+physeq <- physeq_Gene
+`%notin%` <- Negate(`%in%`)
+physeq_CD_RA = subset_samples(physeq, Location %notin%"Punta Espinoza")
+physeq_CD_PE = subset_samples(physeq, Location %notin% "Rabida")
+physeq_PE_RA = subset_samples(physeq, Location %notin% "Cabo Douglas")
+```
+
+
+#Fernandina vs. Rabida
+```{r}
+out = ancombc(phyloseq = physeq, formula = "Island",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Island", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- merge(ancom_signif_names,physeq@tax_table, by = "row.names")
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/MGEs/ANCOMBC_Fernandina_vs_Rabida_GENE.csv",sep = ",", row.names = F) #Writing `sigtab` to my tables
+```
+
+#Cabo Douglas vs. Rabida
+```{r}
+physeq <- physeq_CD_RA
+
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- merge(ancom_signif_names,physeq@tax_table, by = "row.names")
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/MGEs/ANCOMBC_CD_vs_RA_GENE.csv",sep = ",", row.names = F)
+```
+
+
+#Cabo Douglas vs. Punta Espinoza
+```{r}
+physeq <- physeq_CD_PE
+
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- merge(ancom_signif_names,physeq@tax_table, by = "row.names")
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/MGEs/ANCOMBC_CD_vs_PE_GENE.csv",sep = ",", row.names = F)
+```
+
+
+#Rabida vs. Punta Espinoza
+```{r}
+physeq <- physeq_PE_RA
+
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- merge(ancom_signif_names,physeq@tax_table, by = "row.names")
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/MGEs/ANCOMBC_RA_vs_PE_GENE.csv",sep = ",", row.names = F)
+```
+
+#COMPOSITION
+##Class data frame
+
+```{r}
+data_type <- psmelt(physeq_Type) # create dataframe from phyloseq object
+
+library(dplyr)
+data_type_rel = data_type %>% group_by(Sample) %>% mutate(relAbundBySample = Abundance / sum(Abundance)*100) #Converting counts to relative abundance %
+data_type_rel = data_type_rel %>% mutate(Abundance = Abundance / 10^32) #Converting counts to normalized abundance since I multiplied the normalized abundance by 10^9 to calculate the Shannon indes
+```
+
+```{r fig.width=12}
+type_ab <- ggbarplot(data=data_type_rel, x= "Sample", y = "relAbundBySample", color = "Type", fill = "Type", palette = get_palette("Paired",15), ylab = "Abundance", 
+                          #order = metadata$Sample_ID
+                          ) + 
+  facet_grid(~Location, scales = "free_x", space = "free")+labs(colour = "Type", fill = "Type") + 
+  theme(axis.text.x = element_text(angle = 90, size = 7, hjust = 1, colour = "gray35"))
+
+type_ab
+```
+
+```{r}
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+ggsave(plot = type_ab, "mobileOG_type_relab.png", width = 12, height = 6)
+```
+
+#HEAT TREE
+##Modifying phyloseq object
+```{r}
+physeq_gene <- tax_glom(physeq, taxrank = 'Gene')
+physeq <- physeq_gene
+
+#To plot the tolal counts as percentage in the heat tree, divide the sum of the counts by the number of samples and multiply by 100. Here, I have 68 samples.
+
+physeq_t  = transform_sample_counts(physeq, function(x) x / sum(x)/32*100 ) 
+
+#Filter all the taxa that have a percentage higher than 0.0001. This is optional, but I prefer to plot the most abundant genes/taxa
+
+#physeq_t1 = phyloseq::filter_taxa(physeq_t, function(x) mean(x) > 1e-5, TRUE) 
+#physeq_t1 <-  physeq_t1 %>% subset_taxa(Type %in% "Gene")
+```
+
+##Metacoder
+```{r}
+library(metacoder)
+
+#transforming physeq object into a metacoder object
+
+metacoder_object = parse_phyloseq(physeq_t) 
+
+#creating a column with total counts. Keep as is
+metacoder_object$data$taxon_counts <- calc_taxon_abund(metacoder_object, data = "otu_table") 
+
+metacoder_object$data$taxon_counts$total <- rowSums(metacoder_object$data$taxon_counts[, -1]) # -1 = taxon_id column
+
+metacoder_object$data$taxon_prop <- calc_obs_props(metacoder_object, "otu_table")
+```
+##Heat tree
+```{r}
+#Plotting heat-tree
+
+heat_tree = metacoder_object %>%
+  # subset to the class rank
+  heat_tree(node_label = taxon_names,
+            node_size = metacoder_object$data$taxon_counts$total,
+         #   node_size_range = c(0.01, 0.5),
+          #  edge_size_range = c(0.001, 0.005),
+            node_label_size_range = c(0.007, 0.03),
+         node_color = metacoder_object$data$taxon_counts$total,
+
+            node_color_axis_label = "Proportion",
+            node_size_axis_label = "Taxa count",
+            overlap_avoidance =1) #Modify if necssary
+heat_tree
+```
+
+```{r}
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/") 
+
+library(ggplot2)
+ggsave(plot = heat_tree, "heat-tree_MGEs.png", height = 9, width = 11)
+```
+

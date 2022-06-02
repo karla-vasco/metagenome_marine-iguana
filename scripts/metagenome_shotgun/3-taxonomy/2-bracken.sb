@@ -1,0 +1,47 @@
+#!/bin/bash --login  
+ 
+########## Define Resources Needed with SBATCH Lines ##########
+#SBATCH --job-name=braken # give your job a name for easier identification (same as -J)
+#SBATCH --time=168:00:00 # limit of wall clock time - how long will the job take to run? (same as -t)
+#SBATCH --ntasks=1     # number of tasks - how many tasks (nodes) does your job require? (same as -n)
+#SBATCH --cpus-per-task=4 # number of CPUs (or cores) per task (same as -c)
+#SBATCH --mem=50G     # memory required per node - amount of memory (in bytes)
+#SBATCH --output=/mnt/home/vascokar/marine_iguana/eofiles/braken.%j.out #Standard output
+#SBATCH --error=/mnt/home/vascokar/marine_iguana/eofiles/braken.%j.err #Standard error log
+
+########## Diplay the job context ######
+echo Job: $SLUM_JOB_NAME with ID $SLURM_JOB_ID
+echo Running on host `hostname`
+echo Job started at `date '+%T %a %d %b %Y'`
+echo Directory is `pwd`
+echo Using $SLURM_NTASKS processors across $SLURM_NNODES nodes
+
+######### Assign path variables ########
+INPUT_DIRECTORY=/mnt/scratch/vascokar/marine_iguana/shotgun/kraken2
+OUTPUT_DIRECTORY=/mnt/scratch/vascokar/marine_iguana/shotgun/bracken
+DATABASE_DIRECTORY=/mnt/ufs18/rs-033/common-data/Bio/kraken2db/standard-Oct2020
+
+########## Modules to Load ##########
+module load  GCC/9.3.0  OpenMPI/4.0.3
+module load Kraken2/2.1.0-Perl-5.30.2
+module load Bracken/2.6
+
+
+########## Code to Run ###########
+
+cd $INPUT_DIRECTORY
+
+for f in *_kraken2_report.txt # for each sample f
+do
+  n=${f%%_kraken2_report.txt} # strip part of file name
+
+bracken -d $DATABASE_DIRECTORY \
+-i $INPUT_DIRECTORY/${n}_kraken2_report.txt \
+-o $OUTPUT_DIRECTORY/${n}.bracken_species.txt \
+-r 150 \
+-l S \
+-t 20
+done
+
+##### Final time stamp ######
+echo Job finished at `date '+%T %a %d %b %Y'`

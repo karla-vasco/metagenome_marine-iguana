@@ -1,0 +1,177 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(readxl)
+
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun/virulence_VFDB")
+
+#read in otu table
+virulence <- read_excel("VFDB_assembled_iguanas.xlsx", sheet = "VFDB_assembled_iguanas")
+
+```
+
+```{r fig.width=8}
+library(ggpubr)
+
+virulence_class <- virulence %>% 
+  group_by(Class) %>% 
+  summarise(Count_class = sum(Count)) 
+
+top_20 <- top_n(virulence_class,20) 
+
+virulence_class_plot <- virulence %>% 
+  dplyr::filter(Class %in% top_20$Class) %>%
+  group_by(Location, Sample_ID, Class) %>%
+  summarise(Count_class_ID = sum(Count)) %>% 
+  group_by(Location, Class) %>%
+  summarise(Count_class_location = mean(Count_class_ID)) %>% 
+  ggbarplot(x= "Location", y = "Count_class_location", color = "Class", fill = "Class", 
+            palette = get_palette("rickandmorty",20), ylab = "Average Counts", label.pos="out", position = position_stack(), xlab = "Location") + 
+  theme(legend.position = "right", axis.title.x = element_blank()) +
+  labs(colour = "Top 20 Virulence Classes", fill = "Top 20 Virulence Classes")   
+  #theme(legend.text = element_text(face = "italic")) +
+ # guides(color = guide_legend(ncol = 2, bycol = TRUE))
+virulence_class_plot
+```
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+ggsave("top_20_virulence_classes.png", plot = virulence_class_plot, width = 7, height = 6)
+```
+
+```{r}
+library(ggpubr)
+
+virulence_mechanism <- virulence %>% 
+  group_by(Mechanism) %>% 
+  summarise(Count_mech = sum(Count)) 
+
+top_20 <- top_n(virulence_mechanism,20) 
+
+virulence_mech_plot <- virulence %>% 
+  dplyr::filter(Mechanism %in% top_20$Mechanism) %>%
+  group_by(Location, Sample_ID, Mechanism) %>%
+  summarise(Count_mech_ID = sum(Count)) %>% 
+  group_by(Location, Mechanism) %>%
+  summarise(Count_mech_location = mean(Count_mech_ID)) %>% 
+  ggbarplot(x= "Location", y = "Count_mech_location", color = "Mechanism", fill = "Mechanism", 
+            palette = get_palette("rickandmorty",20), ylab = "Average Counts", label.pos="out", position = position_stack(), xlab = "Location") + 
+  theme(legend.position = "right", axis.title.x = element_blank()) +
+  labs(colour = "Virulence Mechanism", fill = "Virulence Mechanism")   
+  #theme(legend.text = element_text(face = "italic")) +
+  #guides(color = guide_legend(ncol = 2, bycol = TRUE))
+virulence_mech_plot
+```
+
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+ggsave("virulence_mechanisms.png", plot = virulence_mech_plot, width = 8, height = 4)
+```
+
+```{r}
+virulence_genus <- virulence %>% 
+  group_by(Genus) %>% 
+  summarise(Count_genus = sum(Count)) 
+
+top_20 <- top_n(virulence_genus,20) 
+
+virulence_genus_plot <- virulence %>% 
+  dplyr::filter(Genus %in% top_20$Genus) %>%
+  group_by(Location, Sample_ID, Genus) %>%
+  summarise(Count_genus_ID = sum(Count)) %>% 
+  group_by(Location, Genus) %>%
+  summarise(Count_genus_location = mean(Count_genus_ID)) %>% 
+  ggbarplot(x= "Location", y = "Count_genus_location", color = "Genus", fill = "Genus", 
+            palette = get_palette("simpsons",20), ylab = "Average Counts", label.pos="out", position = position_stack(), xlab = "Location") + 
+  theme(legend.position = "right", axis.title.x = element_blank()) +
+  labs(colour = "Virulence Genus", fill = "Virulence Genus") +
+  theme(legend.text = element_text(face = "italic")) +
+  guides(color = guide_legend(ncol = 2, bycol = TRUE))
+virulence_genus_plot
+```
+```{r fig.height=6, fig.width=8}
+virulence_genus <- virulence %>% 
+  group_by(Genus) %>% 
+  summarise(Count_genus = sum(Count)) 
+
+top_20 <- top_n(virulence_genus,20) 
+
+virulence_genus_mech_plot <- virulence %>% 
+  dplyr::filter(Genus %in% top_20$Genus) %>%
+  group_by(Location, Sample_ID, Genus, Mechanism) %>%
+  summarise(Count_genus_ID = sum(Count)) %>% 
+  group_by(Location, Genus, Mechanism) %>%
+  summarise(Count_genus_location_mech = mean(Count_genus_ID)) %>% 
+  ggbarplot(x= "Mechanism", y = "Count_genus_location_mech", color = "Genus", fill = "Genus", 
+            palette = get_palette("simpsons",20), ylab = "Average Counts", label.pos="out", position = position_stack(), xlab = "Location") + 
+  theme(legend.position = "right", axis.title.x = element_blank()) +
+  labs(colour = "Virulence Genus", fill = "Virulence Genus") +
+  theme(legend.text = element_text(face = "italic")) +
+  guides(color = guide_legend(ncol = 2, bycol = TRUE)) +
+  theme(axis.text.x = element_text(size = 9)) +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+virulence_genus_mech_plot
+```
+
+
+
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+ggsave("virulence_mechanisms_genus.png", plot = virulence_genus_mech_plot, width = 8, height = 6)
+```
+
+```{r fig.height=6, fig.width=8}
+virulence_class <- virulence %>% 
+  group_by(Class) %>% 
+  summarise(Count_Class = sum(Count)) 
+
+top_20 <- top_n(virulence_class,20) 
+
+virulence_class_mech_plot <- virulence %>% 
+  dplyr::filter(Class %in% top_20$Class) %>%
+  group_by(Location, Sample_ID, Class, Mechanism) %>%
+  summarise(Count_Class_ID = sum(Count)) %>% 
+  group_by(Location, Class, Mechanism) %>%
+  summarise(Count_Class_location_mech = mean(Count_Class_ID)) %>% 
+  ggbarplot(x= "Mechanism", y = "Count_Class_location_mech", color = "Class", fill = "Class", 
+            palette = get_palette("rickandmorty",20), ylab = "Average Counts", label.pos="out", position = position_stack(), xlab = "Location") + 
+  theme(legend.position = "right", axis.title.x = element_blank()) +
+  labs(colour = "Virulence Class", fill = "Virulence Class") +
+  theme(legend.text = element_text(face = "italic")) +
+  guides(color = guide_legend(ncol = 2, bycol = TRUE)) +
+  theme(axis.text.x = element_text(size = 9)) +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+virulence_class_mech_plot
+```
+```{r fig.height=6, fig.width=12}
+virulence_class <- virulence %>% 
+  group_by(Class) %>% 
+  summarise(Count_Class = sum(Count)) 
+
+top_20 <- top_n(virulence_class,20) 
+
+virulence_class_mech_plot <- virulence %>% 
+  dplyr::filter(Class %in% top_20$Class) %>%
+  group_by(Location, Sample_ID, Class, Mechanism) %>%
+  summarise(Count_Class_ID = sum(Count)) %>% 
+  group_by(Location, Class, Mechanism) %>%
+  summarise(Count_Class_location_mech = mean(Count_Class_ID)) %>% 
+  ggbarplot(x= "Mechanism", y = "Count_Class_location_mech", color = "Class", fill = "Class", 
+            palette = get_palette("rickandmorty",20), ylab = "Average Counts", xlab = "Virulence Mechanism",label.pos="out", orientation = "horiz", position = position_stack()) 
++ 
+  theme(legend.position = "right") +
+  labs(colour = "Virulence Class", fill = "Virulence Class") +
+  theme(legend.text = element_text(face = "italic")) +
+  guides(color = guide_legend(nrow = 2, byrow = TRUE)) +
+  theme(axis.text.y = element_text(size = 9)) #+
+ # theme(axis.text.y = element_text(angle = 45, hjust=1))
+virulence_class_mech_plot
+```
+
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/virulence")
+ggsave("virulence_mechanisms_class.png", plot = virulence_class_mech_plot, width = 12, height = 7)
+```

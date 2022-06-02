@@ -1,0 +1,100 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+#Importing tables
+```{r}
+library(readxl)
+
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun/resistome_deepARG/CAT")
+
+#read in otu table
+genus <- read_excel("CAT_names_deepARG.xlsx", sheet = "genus_per")
+phylum <- read_excel("CAT_names_deepARG.xlsx", sheet = "phylum_per")
+```
+
+#Selecting the top 15 taxa
+Filtering non-identified taxa
+```{r}
+library(dplyr)
+`%notin%` <- Negate(`%in%`)
+
+genus_top15 <- genus %>% 
+  filter(Genus %notin% c("NA", "no support")) %>% 
+  head(15)
+
+phylum_top15 <- phylum %>% 
+  filter(Phylum %notin% c("NA", "no support")) %>% 
+  head(15)
+
+genus_top20 <-  genus %>% 
+  filter(Genus %notin% c("NA", "no support")) %>% 
+  head(20)
+
+phylum_top20 <- phylum %>% 
+  filter(Phylum %notin% c("NA", "no support")) %>% 
+  head(20)
+```
+
+#Reshaping table as a data frame
+```{r}
+library(reshape2)
+genus_top15_df <- reshape2::melt(genus_top15,id=colnames(genus_top15)[1])
+
+library(dplyr)
+genus_top15_df <- dplyr::rename(genus_top15_df, `ARG class` = variable)
+genus_top15_df <- dplyr::rename(genus_top15_df, Percentage = value)
+```
+
+#Barplot with the top 15 most abundant genus
+```{r}
+library(ggpubr)
+genus_CAT_deeparg_barplot <- ggbarplot(data=genus_top15_df, x= "ARG class", y = "Percentage", color = "Genus", fill = "Genus", palette = get_palette("rickandmorty",15), ylab = "Percentage of contigs by ARG class", label.pos="out", position = position_stack(), xlab = "ARG Class", orientation = "horiz") + theme(legend.position = "right") +labs(colour = "Genus", fill = "Genus") +  theme(legend.text = element_text(face = "italic"))
+genus_CAT_deeparg_barplot
+```
+
+#Dataframe with the top 20 most abundant genus
+```{r}
+library(reshape2)
+genus_top20_df <- reshape2::melt(genus_top20,id=colnames(genus_top20)[1])
+
+library(dplyr)
+genus_top20_df <- dplyr::rename(genus_top20_df, `ARG class` = variable)
+genus_top20_df <- dplyr::rename(genus_top20_df, Percentage = value)
+```
+
+#Barplot with the top 20 most abundant genus
+```{r fig.height=6}
+library(ggpubr)
+genus_CAT_deeparg_barplot_top20 <- ggbarplot(data=genus_top20_df, x= "ARG class", y = "Percentage", color = "Genus", fill = "Genus", palette = get_palette("simpsons",20), ylab = "Percentage of contigs by ARG class", label.pos="out", position = position_stack(), xlab = "ARG Class", orientation = "horiz") + theme(legend.position = "right") +labs(colour = "Genus", fill = "Genus") +  theme(legend.text = element_text(face = "italic"))
+genus_CAT_deeparg_barplot_top20
+```
+
+
+#Data frame with the top 20 most abundant phyla
+```{r}
+phylum_top15_df <- reshape2::melt(phylum_top15,id=colnames(phylum_top15)[1])
+phylum_top15_df <- dplyr::rename(phylum_top15_df, `ARG class` = variable)
+phylum_top15_df <- dplyr::rename(phylum_top15_df, Percentage = value)
+```
+
+#Barplot with the top 20 most abundant phyla
+```{r}
+library(ggpubr)
+phylum_CAT_deeparg_barplot <- ggbarplot(data=phylum_top15_df, x= "ARG class", y = "Percentage", color = "Phylum", fill = "Phylum", palette = get_palette("simpsons",15), ylab = "Percentage of contigs by ARG class", label.pos="out", position = position_stack(), xlab = "ARG Class", orientation = "horiz") + theme(legend.position = "right") +labs(colour = "Phylum", fill = "Phylum")
+phylum_CAT_deeparg_barplot
+```
+
+#Arranging genus and phyla top 20 most abundant taxa in ACC
+```{r}
+CAT_deepARG_plots <- ggarrange(phylum_CAT_deeparg_barplot, genus_CAT_deeparg_barplot,  ncol = 2, labels = c("A", "B"))
+CAT_deepARG_plots
+```
+
+#Saving plot of taxa associated with ACCs
+```{r}
+library(ggplot2)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/metagenome")
+ggsave("ACC_deepARG_CAT_plots.png", width = 15, height = 5)
+```
+

@@ -1,0 +1,134 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#Importing tables
+```{r}
+library(readxl)
+library(tibble)
+library(dplyr)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun")
+
+metadata <- read_excel("contigs_iguanas_tables.xlsx", sheet = "metadata") 
+
+deepARG <- read_excel("contigs_iguanas_tables.xlsx", sheet = "deepARG") %>% 
+  mutate(Type = "ARG", Superclass = deepARG_Class, OTU = deepARG_ARG) %>% 
+  rename(Gene = deepARG_ARG, Class = deepARG_Class, Counts = deepARG_counts) %>%
+  select(sample_id, OTU, Type, Superclass, Class, Gene, Counts)
+
+mobileOG <- read_excel("contigs_iguanas_tables.xlsx", sheet = "mobileOG") %>% 
+  mutate(Type = "MGE") %>% 
+  unite(OTU, MGE_Type, MGE_Gene, sep = "-", remove = F) %>% 
+  rename(Class = MGE_Gene, Superclass = MGE_Type, Counts = MGE_count)%>%
+  mutate(Gene = OTU) %>% 
+  select(sample_id, OTU, Type, Superclass, Class, Gene, Counts)
+
+VFDB <- read_excel("contigs_iguanas_tables.xlsx", sheet = "VFDB") %>% 
+  mutate(Type = "Virulence", OTU = VFDB_Gene, Class = VFDB_Mechanism) %>% 
+  rename(Gene = VFDB_Gene, Superclass = VFDB_Mechanism, Counts = VFDB_Count) %>%
+  select(sample_id, OTU, Type, Superclass, Class, Gene, Counts)
+
+kraken_genus <- read_excel("contigs_iguanas_tables.xlsx", sheet = "kraken_genus") %>% 
+  mutate(Type = "Taxa", OTU = Genus, Class = Genus, Superclass = Genus) %>% 
+  rename(Gene = Genus, Counts = reads) %>%
+  select(sample_id, OTU, Type, Superclass, Class, Gene, Counts)
+```
+
+```{r}
+abundance_tables <- union(deepARG, mobileOG) %>% 
+  union(VFDB) %>% 
+  union(kraken_genus)
+metadata_genes <- merge(abundance_tables, metadata)
+```
+
+#OTU table normalized by the number of Bacterial reads
+```{r}
+norm_abundance <- metadata_genes %>% 
+  select(sample_id, OTU, Counts, Bacteria_bracken) %>% 
+  group_by(sample_id, OTU) %>% 
+  summarise(norm.abundance = sum(Counts/Bacteria_bracken*100)) %>% 
+  as.data.frame()
+
+library(tidyr)
+norm.mx <-spread(norm_abundance, key = sample_id, value = norm.abundance) %>%  tibble::remove_rownames() %>%  tibble::column_to_rownames("OTU")
+  
+norm.mx[is.na(norm.mx)] = 0
+norm.mx=as.matrix(norm.mx,rownames=T)
+norm.mx <- norm.mx
+```
+
+
+#Making taxonomy table
+```{r}
+taxonomy <- abundance_tables %>% select(OTU, Type, Superclass, Class, Gene) %>% 
+  distinct() %>% #Remove duplicate rows
+  arrange(OTU) %>% #organize names alphabetically
+  tibble::remove_rownames() %>%  tibble::column_to_rownames("OTU")
+taxonomy=as.matrix(taxonomy,rownames=TRUE)
+```
+
+#Phyloseq object
+```{r}
+library(phyloseq)
+#import as phyloseq objects
+OTU = otu_table(norm.mx,taxa_are_rows=T)
+TAX = tax_table(taxonomy)
+META = metadata %>% tibble::remove_rownames() %>% tibble::column_to_rownames("sample_id") %>% sample_data()
+
+physeq=phyloseq(OTU,TAX,META)
+```
+
+#Aggregate by Type
+```{r}
+physeq_type <- tax_glom(physeq, taxrank = "Type")
+type_df <- psmelt(physeq_type)
+```
+
+```{r}
+type_df %>% group_by(Type) %>% summarize(mean_Ab = mean(Abundance), SD = sd(Abundance))
+```
+```{r}
+library(ggpubr)
+my_comparisons <- list(c("Cabo Douglas", "Punta Espinoza"), c("Punta Espinoza", "Rabida"), c("Cabo Douglas", "Rabida"))
+
+norm_ab_plot <- type_df %>%
+  filter(Type %in% c("ARG","MGE","Virulence")) %>% 
+  ggboxplot(x = "Location", y = "Abundance", add = "jitter", palette = "aaas", fill = "Location", color  = "Location", ylab = F, alpha = 0.5, xlab = F, facet.by = "Type", scales = "free") +
+  stat_compare_means(comparisons = my_comparisons, 
+                     tip.length=.02, hide.ns = F, size = 3.5) +
+  stat_compare_means(label.y.npc = "bottom", label.x.npc = .3)
+
+norm_ab_plot
+```
+
+```{r}
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/")
+ggsave("genes_norm.abundance.png", width = 15, height = 5)
+```
+
+#Aggregate by Type
+```{r}
+physeq_superclass <- tax_glom(physeq, taxrank = "Superclass")
+superclass_df <- psmelt(physeq_superclass)
+```
+
+```{r}
+mge_class <- superclass_df %>% filter(Type %in% "MGE") %>% group_by(Type, Superclass) %>% summarise(mean = mean(Abundance)) %>% arrange(mean)
+```
+
+#Aggregate by gene
+```{r}
+metagenome_df <- psmelt(physeq)
+```
+
+```{r}
+gene_summary <- metagenome_df %>% filter(Type %in% c("MGE", "ARG", "Virulence")) %>%                            group_by(Type, Superclass, Gene, Location) %>% summarise(Mean = mean(Abundance), SD = sd(Abundance))
+gene_summary
+```
+
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun")
+write.csv(gene_summary,"normalized_abundance_genes_mNGS.csv")
+```
+

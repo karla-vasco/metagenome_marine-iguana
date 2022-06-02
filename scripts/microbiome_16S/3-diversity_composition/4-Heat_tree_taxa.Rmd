@@ -1,0 +1,104 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+##Importing tables
+#Physeq object
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/microbiome_16S/qiime2_phyloseq")
+
+#read in otu table
+otu_table = read.table("feature-table.txt",sep="\t",row.names = 1,header = TRUE)
+otu_table=as.matrix(otu_table,rownames=TRUE)
+#read in taxonomy
+taxonomy = read.csv("taxonomy.tsv",sep="\t",row.names=1)
+taxonomy=as.matrix(taxonomy)
+
+#read in metadata
+metadata=read.table("metadata_marine-iguana_2021-04-08.csv", sep = ",", header = TRUE, row.names=1, na.strings = "") 
+metadata
+phy_tree = read_tree("tree.nwk")
+
+#import as phyloseq objects
+OTU = otu_table(otu_table,taxa_are_rows=TRUE)
+TAX = tax_table(taxonomy)
+META = sample_data(metadata)
+
+# Sanity checks for consistent OTU names
+taxa_names(TAX)
+taxa_names(OTU)
+taxa_names(phy_tree)
+
+# Same sample names
+sample_names(OTU)
+sample_names(META)
+
+#(tree was already imported as a phyloseq object)
+physeq=phyloseq(OTU,TAX,META,phy_tree)
+```
+
+##Filtering taxa
+```{r}
+library(dplyr)
+`%notin%` <- Negate(`%in%`)
+#Filtering chloroplasts and mitocondria
+physeq <-  physeq %>% subset_taxa(Order %notin% "Chloroplast", Family %notin% "Mitochondria")
+
+#Aggregating abundances at the Family level
+physeq_genus <- tax_glom(physeq, taxrank = 'Genus')
+physeq <- physeq_genus
+```
+
+#Transforming counts to percentage
+```{r}
+#To plot the tolal counts as percentage in the heat tree, divide the sum of the counts by the number of samples and multiply by 100. Here, I have 68 samples.
+physeq_t  = transform_sample_counts(physeq, function(x) x / sum(x)/68*100 ) 
+
+#Filter all the taxa that have a percentage higher than 0.0001. This is optional, but I prefer to plot the most abundant taxa
+physeq_t1 = phyloseq::filter_taxa(physeq_t, function(x) mean(x) > 1e-5, TRUE) 
+physeq_t1 <-  physeq_t1 %>% subset_taxa(Kingdom %in% "Bacteria")
+```
+
+#Metacoder
+```{r}
+library(metacoder)
+
+#transforming physeq object into a metacoder object
+metacoder_object = parse_phyloseq(physeq_t1) 
+
+#creating a column with total counts. Keep as is
+metacoder_object$data$taxon_counts <- calc_taxon_abund(metacoder_object, data = "otu_table") 
+
+metacoder_object$data$taxon_counts$total <- rowSums(metacoder_object$data$taxon_counts[, -1]) # -1 = taxon_id column
+
+metacoder_object$data$taxon_prop <- calc_obs_props(metacoder_object, "otu_table")
+```
+
+#Heat tree
+```{r}
+#Plotting heat-tree
+heat_tree = metacoder_object %>%
+  # subset to the class rank
+  heat_tree(node_label = taxon_names,
+            node_size = metacoder_object$data$taxon_counts$total,
+         #   node_size_range = c(0.01, 0.5),
+          #  edge_size_range = c(0.001, 0.005),
+            node_label_size_range = c(0.007, 0.03),
+         node_color = metacoder_object$data$taxon_counts$total,
+
+            node_color_axis_label = "Proportion",
+            node_size_axis_label = "Tax count",
+            overlap_avoidance =1) #Modify if necssary
+heat_tree
+```
+
+#Saving figure in my directory
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/microbiome") 
+
+library(ggplot2)
+ggsave(plot = heat_tree, "heat-tree_bacteria.png", height = 9, width = 11)
+```

@@ -1,0 +1,394 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(readxl)
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun")
+metadata <- read_excel("contigs_iguanas_tables.xlsx", sheet = "metadata")
+contigs_args <- read_excel("contigs_iguanas_tables.xlsx", sheet = "ARG_genes")
+contigs_vir <- read_excel("contigs_iguanas_tables.xlsx", sheet = "Virulence_MGEs")
+CAT <- read_excel("contigs_iguanas_tables.xlsx", sheet = "CAT")
+VFDB <- read_excel("contigs_iguanas_tables.xlsx", sheet = "VFDB")
+mobileOG <- read_excel("contigs_iguanas_tables.xlsx", sheet = "mobileOG")
+deepARG <- read_excel("contigs_iguanas_tables.xlsx", sheet = "deepARG")
+```
+
+```{r}
+cont1 <- merge(mobileOG, VFDB, by = c("sample_id","contig"), all = T)
+cont2 <- merge(cont1, deepARG, by = c("sample_id","contig"), all = T)
+cont3 <- merge(cont2, CAT, by = c("sample_id","contig"), all = T)
+cont4 <- merge(cont3, metadata, by = c("sample_id"), all = T)
+cont_ARG <- merge(cont4, contigs_args, by = c("sample_id","contig"), all = F)
+```
+
+```{r}
+library(dplyr)
+contigs <- cont_ARG %>% 
+  select(sample_id, contig, Location, Island, ARG, MGE, Virulence, contig, deepARG_ARG, ARG, deepARG_Class, MGE_Type,MGE_Gene, MGE_Mechanism, MGE_class, VFDB_Mechanism, VFDB_Class, VFDB_Gene, VFDB_Genus, superkingdom, phylum, class, order, family, genus, species)
+```
+
+```{r}
+library(tidyr)
+contigs_cat <- contigs %>% 
+  unite("contig_genes", deepARG_ARG,MGE_Gene,VFDB_Gene, sep= "-", na.rm = T, remove = FALSE) %>% 
+  unite("contig_classes", deepARG_Class,MGE_Type,VFDB_Class, sep= "-", na.rm = T, remove = FALSE) %>% 
+  unite("contig_taxa", deepARG_Class,MGE_Type,VFDB_Class, phylum, order, genus, sep= "-", na.rm = T, remove = FALSE) %>% 
+    unite("sample_contig", sample_id,contig,sep= "-", na.rm = T, remove = FALSE)
+```
+
+Counts per classes
+```{r}
+combination_counts <- contigs_cat %>% 
+  group_by(sample_contig, contig_classes) %>% 
+  count()
+combination_counts
+```
+
+Counts per classes by location
+```{r}
+combination_counts_location <- contigs_cat %>% 
+  group_by(Location, contig_classes) %>% 
+  count()
+combination_counts_location
+```
+
+Counts per classes general
+```{r}
+combination_counts_general <- contigs_cat %>% 
+  group_by(contig_classes) %>% 
+  count()
+combination_counts_general
+```
+
+```{r}
+library(ggpubr)
+HGT_counts_ARG_class <- contigs_cat %>% 
+  filter(MGE_Type %notin% NA) %>% 
+  group_by(deepARG_Class,MGE_Type,Location) %>% 
+  summarise(HGT_count = n()) 
+
+order_abundance <- HGT_counts_ARG_class %>% 
+  group_by(deepARG_Class) %>% 
+  summarise(total = sum(HGT_count)) %>% 
+  arrange(desc(total))
+
+contigs_ARGs_MGES_plot <- ggbarplot(data = HGT_counts_ARG_class, x = "deepARG_Class", y = "HGT_count", fill = "MGE_Type", color ="MGE_Type", order = order_abundance$deepARG_Class,orientation = "horizontal", palette = "simpsons", facet.by = "Location",legend="right",  scales = "free_x",xlab = "Drug Class", ylab = "No. contigs") + labs (fill = "Type", color = "Type") + theme(axis.title.y  = element_blank())
+contigs_ARGs_MGES_plot
+```
+```{r}
+library(ggpubr)
+HGT_counts_ARG_class <- contigs_cat %>% 
+  filter(MGE_Type %notin% NA) %>% 
+  group_by(deepARG_Class,MGE_Type,Location) %>% 
+  summarise(HGT_count = n()) 
+
+order_abundance <- HGT_counts_ARG_class %>% 
+  group_by(MGE_Type) %>% 
+  summarise(total = sum(HGT_count)) %>% 
+  arrange(desc(total))
+
+contigs_MGES_ARGs_plot <- ggbarplot(data = HGT_counts_ARG_class, x = "MGE_Type", y = "HGT_count", fill = "deepARG_Class", color ="deepARG_Class", order = order_abundance$MGE_Type,orientation = "horizontal", palette = get_palette("simpsons",17),legend="right", facet.by = "Location", scales = "free_x", xlab = "MGE", ylab = "No. Contigs") + labs (fill = "Type", color = "Type") #+ theme(axis.text.x = element_blank())
+contigs_MGES_ARGs_plot
+```
+```{r}
+setwd("~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/figures-plots/metagenome_composition")
+ggsave(plot = contigs_MGES_ARGs_plot, "contigs_MGES_ARGs_plot.png", width = 8, height = 4.2)
+ggsave(plot = contigs_ARGs_MGES_plot, "contigs_ARGs_MGES_plot.png", width = 8, height = 4)
+```
+
+```{r}
+library(ggpubr)
+HGT_counts_ARG_class <- contigs_cat %>% 
+  filter(MGE_Type %notin% NA) %>% 
+  group_by(deepARG_Class,MGE_Type, Location) %>% 
+  summarise(HGT_count = n()) 
+
+order_abundance <- HGT_counts_ARG_class %>% 
+  group_by(deepARG_Class) %>% 
+  summarise(total = sum(HGT_count)) %>% 
+  arrange(desc(total))
+
+contigs_ARGs_MGES_plot_fill <- ggbarplot(data = HGT_counts_ARG_class, x = "deepARG_Class", y = "HGT_count", fill = "MGE_Type", color ="MGE_Type", facet.by = "Location",position = position_fill(),order = order_abundance$deepARG_Class,orientation = "horizontal", palette = "simpsons", xlab = "Drug Class", ylab = "Proportion Horizontal Transfer Genes") + labs (fill = "Type", color = "Type") #+ theme(axis.text.x = element_blank())
+contigs_ARGs_MGES_plot_fill
+```
+```{r}
+library(ggpubr)
+HGT_counts_ARG_class <- contigs_cat %>% 
+  filter(MGE_Type %notin% NA) %>% 
+  group_by(deepARG_Class,MGE_Type,Location) %>% 
+  summarise(HGT_count = n()) 
+
+order_abundance <- HGT_counts_ARG_class %>% 
+  group_by(MGE_Type) %>% 
+  summarise(total = sum(HGT_count)) %>% 
+  arrange(desc(total))
+
+contigs_MGES_ARGs_plot_fill <- ggbarplot(data = HGT_counts_ARG_class, x = "MGE_Type", y = "HGT_count", fill = "deepARG_Class", color ="deepARG_Class", order = order_abundance$MGE_Type,orientation = "horizontal", palette = get_palette("simpsons",17),position = position_fill(),legend="right", facet.by = "Location", scales = "free_x", xlab = "MGE", ylab = "No. Contigs") + labs (fill = "Type", color = "Type") #+ theme(axis.text.x = element_blank())
+contigs_MGES_ARGs_plot_fill
+```
+
+count ARGs
+```{r}
+`%notin%` <- Negate(`%in%`)
+
+args_counts <- contigs_cat %>% 
+  group_by(sample_contig, deepARG_ARG) %>% 
+  count() %>% 
+   rename(gene = deepARG_ARG) %>% 
+  filter(gene %notin% "NA") %>% 
+  mutate(Type = "ARG")
+args_counts
+```
+Counts MGEs
+```{r}
+mge_counts <- contigs_cat %>% 
+  group_by(sample_contig, MGE_Gene) %>% 
+  count() %>% 
+  rename(gene = MGE_Gene) %>% 
+  filter(gene %notin% NA)%>% 
+  mutate(Type = "MGE")
+mge_counts
+```
+Counts virulence genes
+```{r}
+vir_counts <- contigs_cat %>% 
+  group_by(sample_contig, VFDB_Gene) %>% 
+  count() %>% 
+  rename(gene = VFDB_Gene) %>% 
+  filter(gene %notin% NA) %>% 
+  mutate(Type = "Virulence")
+vir_counts
+```
+
+```{r}
+genes_df <- union(args_counts, mge_counts) %>% 
+  union(vir_counts)
+genes_df
+as.data.frame(genes_df)
+```
+
+```{r}
+library(tidyr)
+genes_mx <- pivot_wider(genes_df, names_from = gene, values_from = n)
+```
+
+```{r}
+counts_classes <- contigs_cat %>% 
+  group_by(Location, contig_classes) %>% 
+  count()
+```
+
+```{r}
+counts_genes <-contigs_cat %>% 
+  group_by(Location, contig_genes) %>% 
+  count()
+```
+
+```{r}
+counts_taxa <-contigs_cat %>% 
+  group_by(Location, contig_taxa) %>% 
+  count()
+```
+
+#VIRULENCE
+```{r}
+cont_virulence <- merge(cont4, contigs_vir, by = c("sample_id","contig"), all = F)
+```
+
+
+```{r}
+library(dplyr)
+contigs_vir_MGE <- cont_virulence %>% 
+  select(sample_id, Location, Island, MGE, Virulence, contig, MGE_Gene, MGE_Mechanism, MGE_class, VFDB_Mechanism, VFDB_Class, VFDB_Gene, VFDB_Genus)
+```
+
+```{r}
+library(tidyr)
+contigs_cat_virMGE <- contigs_vir_MGE %>% 
+  unite("contig_genes", MGE_Gene,VFDB_Gene, sep= "-", na.rm = T, remove = FALSE) %>% 
+  unite("contig_type", MGE_Type,VFDB_Class, sep= "-", na.rm = T, remove = FALSE) %>% 
+  unite("contig_taxa", MGE_Type,VFDB_Class,VFDB_Genus, sep= "-", na.rm = T, remove = FALSE)
+```
+
+```{r}
+counts_classes_vir <- contigs_cat_virMGE %>% 
+  group_by(Location, contig_classes) %>% 
+  count()
+```
+
+```{r}
+counts_genes_vir <-contigs_cat_virMGE %>% 
+  group_by(Location, contig_genes) %>% 
+  count()
+```
+
+```{r}
+counts_taxa_vir <-contigs_cat_virMGE %>% 
+  group_by(Location, contig_taxa) %>% 
+  count()
+```
+
+#NETWORK
+###Nodes
+This table will have information about the nodes like type (ARG, phage, virulence, taxa), class (family for taxa and phages), gene (genus for taxa and phages), and abundance.
+```{r}
+genes <-  genes_df %>%
+  select(gene, Type) %>% 
+  group_by(Type, gene) %>%
+  count
+genes <- as.data.frame(genes)
+
+nodes <- genes %>% 
+  select(Type, gene, n) %>% 
+  mutate(id = row.names(genes)) %>% #Number correspond to the number of observations in nodes table
+  mutate(Label = gene) %>% #Changing name of column Gene for Label, which is going to be the label observed in the network
+  select(Label, id, everything()) #Reordering columns
+
+#Saving final file as csv
+write.csv(nodes, "~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/contig_nodes.csv", row.names = F)
+```
+
+
+###Edges
+```{r}
+library(tibble)
+#Making an abundance matrix that exclude the metadata and only include genes/taxa abundances
+abundance_matrix <- genes_mx %>% remove_rownames %>% column_to_rownames(var="sample_contig") 
+abundance_matrix=as.matrix(abundance_matrix,rownames=TRUE)
+
+abundance_matrix[is.na(abundance_matrix)] <- 0 #converting NAs to 0 to calculate correlations
+
+
+library(Hmisc)
+#Calculating correlations
+correlations <-rcorr(as.matrix(abundance_matrix))
+
+#Function to change correlation table format
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+
+edges = flattenCorrMatrix(correlations$r, correlations$P)
+
+#Renaming columns, adding correlation type, and filtering correlations higher than 0.75
+edges <- edges %>% 
+  dplyr::rename(Label = row, Target = column, Correlation = cor) %>% #Labels required in Gephi
+  mutate(Type = "undirected") %>% #This column is required in Gephi, tells the direction of the relationship between nodes
+  filter(Correlation >= 0.5, p <= 0.05) #Filtering significant correlations
+
+#Changing labels for id numbers (corresponding to node id). This is the format that Gephi requires
+edges_source_numbers <- left_join(edges,nodes, by = "Label") %>%
+  dplyr::rename(Source = id) %>% 
+  select(Source, Target, Correlation, Type.x) %>% 
+  dplyr::rename(Label = Target)
+
+edges_target_source_numbers <- left_join(edges_source_numbers,nodes, by = "Label") %>% 
+  select(Source, id, Correlation, Type.x) %>% 
+  dplyr::rename(Target = id, Type = Type.x)
+
+#Saving edges files as csv
+
+#Edge table with node labels (just for reference)
+write.csv(edges, "~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/contigs_edges_labels.csv", row.names = F)
+
+#Edge table with node numbers (the one to use in Gephi)
+write.csv(edges_target_source_numbers, "~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/networks/contigs_edges_gephi.csv", row.names = F)
+```
+
+#HEATMAP
+```{r}
+#install.packages(pheatmap)
+library(ggplot2)
+library(pheatmap)
+#library(viridis) #color pallet, it's optional
+library(RColorBrewer)
+```
+
+```{r}
+args_counts_location <- contigs_cat %>% 
+  group_by(sample_contig, deepARG_ARG, Location) %>% 
+  count() %>% 
+   rename(gene = deepARG_ARG) %>% 
+  filter(gene %notin% "NA") %>% 
+  mutate(Type = "ARG")
+args_counts_location
+```
+
+
+```{r}
+#TABLE
+gene_names <- as.data.frame(colnames(abundance_matrix)) %>% rename (gene = `colnames(abundance_matrix)`) %>% 
+  merge(genes_df, by = "gene", all = F) %>% 
+  select(gene, Type) %>% 
+  group_by(gene,Type) %>% 
+  count() %>% arrange("gene")
+
+#ANNOTATION COLUMNS
+anno_gene <- genes_df %>% 
+  group_by(gene, Type) %>% 
+  select(Type) %>% 
+  as.data.frame()
+
+anno_location <- data.frame(Location = args_counts_location$Location)
+abundance_matrix
+rownames(anno_location)= rownames(as.data.frame(abundance_matrix))
+rownames(anno_gene)= colnames(as.data.frame(abundance_matrix))
+
+#anno_sp2 <- data.frame(Island = factor(rep(c("Fernandina", "Rabida"), c(60,8))))
+#rownames(anno_sp2)= colnames(as.data.frame(ct32_matrix))
+
+anno_color <- list(Location = c(`Cabo Douglas` = "#0072B2", `Punta Espinoza` = "#D55E00", Rabida = "#009E73"), 
+                  # Island = c(Fernandina = "#7570B3", Rabida = "#E7298A"),
+                   Gene = c(ARG = "#F8766D", MGE = "#619CFF", Virulence = "#00BA38"))
+    
+```
+
+```{r fig.width=10, fig.height=8}
+#HEATMAP RA USING ln color pallet RBrewer
+heatmap_contigs <- pheatmap(
+#  mat               = ct32_matrix,
+    mat               = log(abundance_matrix+0.00001),
+  border_color      = NA,
+  show_colnames     = FALSE,
+  show_rownames     = F,
+  drop_levels       = TRUE,
+  fontsize          = 14,
+  color             = brewer.pal(7,"Reds"),
+  annotation_row   = anno_location,
+  annotation_col = anno_gene,
+  annotation_colors = anno_color,
+ fontsize_row = 7,
+  annotation_names_col = FALSE,
+  annotation_names_row = F,
+  cluster_cols = T,
+  cluster_rows = T,
+  gaps_row = FALSE,
+  main = "ACC + MGE/Virulence"
+)
+heatmap_contigs
+```
+
+```{r}
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/results/smartchip/")
+
+# mm to inch
+setWidth = 10
+
+# font size in pt
+setFontSize = 7
+
+# 1 in R = 0.75pt, so 0.25pt is specified as 
+setLwd <- 0.25/0.75    
+
+
+pdf(file='heatmap_ct32_clustered.pdf',width=setWidth,height=8,pointsize=setFontSize)
+heatmap_ct32
+dev.off()
+```

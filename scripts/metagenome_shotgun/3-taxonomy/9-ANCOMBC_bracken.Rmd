@@ -1,0 +1,160 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(readxl)
+library(ggpubr)
+library(rstatix)
+library(dplyr)
+library(forcats)
+library(ggsci)
+```
+
+
+#Import tables
+```{r}
+library(readxl)
+
+setwd("/Users/karlavasco/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_Iguana/tables/metagenome_shotgun/taxonomy_kraken")
+
+#read in otu table
+otu_table <- read_excel("bracken_marine_iguana_species.xlsx", sheet = "otu_table")
+
+library(tibble)
+otu_table <- otu_table %>% remove_rownames %>% column_to_rownames(var="OTU_ID")
+otu_table=as.matrix(otu_table,rownames=TRUE)
+#mode(otu_table) <- "integer"
+otu_table[is.na(otu_table)] <- 0
+
+#read in taxonomy
+taxonomy1 <- read_excel("bracken_marine_iguana_species.xlsx", sheet = "taxonomy")
+taxonomy <- taxonomy1 %>% remove_rownames %>% column_to_rownames(var="OTU_ID")
+taxonomy=as.matrix(taxonomy)
+
+#read in metadata
+metadata <- read_excel("bracken_marine_iguana_species.xlsx", sheet = "metadata")
+metadata <- metadata %>% remove_rownames %>% column_to_rownames(var="Sample_ID")
+
+library("phyloseq")
+#import as phyloseq objects
+OTU = otu_table(otu_table,taxa_are_rows=TRUE)
+TAX = tax_table(taxonomy)
+META = sample_data(metadata)
+
+#(tree was already imported as a phyloseq object)
+physeq=phyloseq(OTU,TAX,META)
+```
+
+#Filtering samples and taxa for further analyses
+```{r}
+`%notin%` <- Negate(`%in%`)
+physeq_CD_RA = subset_samples(physeq, Location %notin%"Punta Espinoza")
+physeq_CD_PE = subset_samples(physeq, Location %notin% "Rabida")
+physeq_PE_RA = subset_samples(physeq, Location %notin% "Cabo Douglas")
+```
+
+#ANCOM-BC
+```{r}
+library(microbiome)
+library(nloptr)
+library(ANCOMBC)
+```
+
+#Fernandina vs. Rabida
+```{r}
+out = ancombc(phyloseq = physeq, formula = "Island",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Island", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "OTU_ID")
+ancom_signif_names <- merge(ancom_signif_names,taxonomy1, by = "OTU_ID")
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/taxonomy_kraken/ANCOMBC_Fernandina_vs_Rabida.csv",sep = ",", row.names = F) #Writing `sigtab` to my tables
+```
+
+#Cabo Douglas vs. Rabida
+```{r}
+physeq <- physeq_CD_RA
+
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "OTU_ID")
+ancom_signif_names <- merge(ancom_signif_names,taxonomy1, by = "OTU_ID")
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/taxonomy_kraken/ANCOMBC_CD_vs_RA.csv",sep = ",", row.names = F)
+```
+
+
+#Cabo Douglas vs. Punta Espinoza
+```{r}
+physeq <- physeq_CD_PE
+
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "OTU_ID")
+ancom_signif_names <- merge(ancom_signif_names,taxonomy1, by = "OTU_ID")
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/taxonomy_kraken/ANCOMBC_CD_vs_PE.csv",sep = ",", row.names = F)
+```
+
+
+#Rabida vs. Punta Espinoza
+```{r}
+physeq <- physeq_PE_RA
+
+out = ancombc(phyloseq = physeq, formula = "Location",
+              p_adj_method = "holm", zero_cut = 0.90, lib_cut = 0,
+              group = "Location", struc_zero = F, neg_lb = FALSE,
+              tol = 1e-05, max_iter = 100, conserve = TRUE,
+              alpha = 0.05, global = F)
+res = out$res
+
+ancom_results = res %>% 
+  as_tibble()
+
+ancom_signif_list <- ancom_results %>% 
+  filter(p_val <= 0.05)
+
+ancom_signif_names <- data.frame(sapply(ancom_signif_list,c)) 
+row.names(ancom_signif_names) <- rownames(ancom_signif_list$beta)
+ancom_signif_names <- tibble::rownames_to_column(ancom_signif_names, "OTU_ID")
+ancom_signif_names <- merge(ancom_signif_names,taxonomy1, by = "OTU_ID")
+write.table(ancom_signif_names, file="~/OneDrive\ -\ Michigan\ State\ University/Zhang_lab/Marine_iguana/tables/metagenome_shotgun/taxonomy_kraken/ANCOMBC_RA_vs_PE.csv",sep = ",", row.names = F)
+```
