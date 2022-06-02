@@ -1,0 +1,16 @@
+﻿class_gene,Location,LDA,p-value
+Other | nisB,Cabo Douglas,3.467758361,0.010927412
+Amphenicol | cmlV,Cabo Douglas,3.567508676,0.000505483
+MGEs | intI1F165-clinical,Cabo Douglas,4.650762589,0.004151085
+Amphenicol,Cabo Douglas,3.503510642,0.004062113
+MGEs | ISEcp1,Cabo Douglas,3.401806575,0.00033195
+MGEs | IncI1-repI1,Cabo Douglas,3.470168862,0.042920165
+Fluoroquinolone,Punta Espinoza,4.045668665,0.00485065
+Fluoroquinolone | qnrA,Punta Espinoza,4.07380241,1.61E-05
+MDR | tolC,Punta Espinoza,3.108224355,0.0299161
+MGEs | IncP-oriT,Punta Espinoza,4.040268918,0.0005835
+MGEs | intl3,Punta Espinoza,3.377687943,0.020165544
+MGEs | trb-C,Rabida,4.190089597,0.000168652
+Tetracycline | tetPA,Rabida,4.196297061,2.65E-05
+Sulfonamide,Rabida,3.212441064,0.037027487
+Tetracycline,Rabida,4.123082409,0.000754876

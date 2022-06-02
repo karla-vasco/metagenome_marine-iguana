@@ -1,0 +1,121 @@
+2021-04-09 00:17:07 INFO::Writing function arguments to log file
+2021-04-09 00:17:07 DEBUG::Function arguments
+2021-04-09 00:17:07 DEBUG::Output folder: /Users/karlavasco/OneDrive - Michigan State University/Zhang_lab/Marine_Iguana/results/maaslin2/smartchip_ct32_PE
+2021-04-09 00:17:07 DEBUG::Min Abundance: 0.000000
+2021-04-09 00:17:07 DEBUG::Min Prevalence: 0.100000
+2021-04-09 00:17:07 DEBUG::Normalization: TSS
+2021-04-09 00:17:07 DEBUG::Transform: LOG
+2021-04-09 00:17:07 DEBUG::Analysis method: LM
+2021-04-09 00:17:07 DEBUG::Max significance: 0.250000
+2021-04-09 00:17:07 DEBUG::Random effects: DNA_ext_date
+2021-04-09 00:17:07 DEBUG::Fixed effects: location,island
+2021-04-09 00:17:07 DEBUG::Correction method: BH
+2021-04-09 00:17:07 DEBUG::Standardize: FALSE
+2021-04-09 00:17:07 DEBUG::Cores: 1
+2021-04-09 00:17:07 INFO::Verifying options selected are valid
+2021-04-09 00:17:07 INFO::Determining format of input files
+2021-04-09 00:17:07 INFO::Input format is data samples as columns and metadata samples as rows
+2021-04-09 00:17:07 DEBUG::Transformed data so samples are rows
+2021-04-09 00:17:07 DEBUG::A total of 68 samples were found in both the data and metadata
+2021-04-09 00:17:07 DEBUG::Reordering data/metadata to use same sample ordering
+2021-04-09 00:17:07 INFO::Formula for random effects: expr ~ (1 | DNA_ext_date)
+2021-04-09 00:17:07 INFO::Formula for fixed effects: expr ~  location + island
+2021-04-09 00:17:07 INFO::Filter data based on min abundance and min prevalence
+2021-04-09 00:17:07 INFO::Total samples in data: 68
+2021-04-09 00:17:07 INFO::Min samples required with min abundance for a feature not to be filtered: 6.800000
+2021-04-09 00:17:07 INFO::Total filtered features: 102
+2021-04-09 00:17:07 INFO::Filtered feature names from abundance and prevalence filtering: Aminoglycoside.aacA.aphD, Aminoglycoside.aphA3, Aminoglycoside.aadA2, Aminoglycoside.aadD, Aminoglycoside.aadE, Aminoglycoside.aac3ia, Aminoglycoside.aph3via, Aminoglycoside.aph6ic, Aminoglycoside.spcN, Aminoglycoside.aac.3..ib, Aminoglycoside.aac.3..iid_iii_iif_iia_iie, Aminoglycoside.aac.6..iic, Aminoglycoside.aac.6..ij, Aminoglycoside.aac.6..im, Aminoglycoside.aac.6..iv_ih, Aminoglycoside.aac.6..iw, Aminoglycoside.aadB, Aminoglycoside.apmA, Aminoglycoside.aph_viii, Amphenicol.cmx.A., Amphenicol.catA3, Amphenicol.catB2, Amphenicol.catB9, Amphenicol.floR, Amphenicol.optrA, Beta_Lactam.blaOXY.2, Beta_Lactam.bla.L1, Beta_Lactam.cfxA, Beta_Lactam.blaCMY, Beta_Lactam.blaGES, Beta_Lactam.imp.marko, Beta_Lactam.beta_ccra, Beta_Lactam.blaSHV.11, Beta_Lactam.blaB.11.13.14, Beta_Lactam.blaGOB, Beta_Lactam.nonmobile.blaBEL, Beta_Lactam.ampC, Fluoroquinolone.qnrD, MDR.acrB, MDR.acrF, MDR.adeA, MDR.acrA, MDR.mdtE.yhiU, MDR.nimE, MDR.emrB.qacA, MDR.mtrE, MDR.ttgA, MDR.merA.marko, MDR.mdth, MDR.pcoA, MDR.arsA, MDR.mdtA, MDR.sugE, MDR.tcrB, MGEs.tnpA_1, MGEs.tnpA_2, MGEs.tnpA_3, MGEs.tnpA_4, MGEs.IncN_rep, MGEs.orf39.IS26, MGEs.ISSm2.Xanthob, MGEs.lncF_FIC, MGEs.cro, MLSB.ermK, MLSB.mphB, MLSB.msr.A., MLSB.ermX, MLSB.vgaB, MLSB.pica, MLSB.lnuA, MLSB.erm.C., MLSB.ere.A., MLSB.erm.B., MLSB.erm.E., MLSB.erm.O., MLSB.erm.Q., MLSB.erm.S., MLSB.mphA, MLSB.vat.A., MLSB.vgaA, MLSB.lnuC, Other.pmrA, Other.fosX, Sulfonamide.sul2, Sulfonamide.sul1.NEW, Tetracycline.tetPB, Tetracycline.tetG_F, Tetracycline..tetA, Tetracycline..tetQ, Tetracycline..tetW, Tetracycline..tetV, Tetracycline..tetT, Tetracycline..tet.36., Tetracycline..tetM, Trimethoprim.dfrA18, Trimethoprim.dfrAB4, Trimethoprim.dfrK, Vancomycin.vanD, Vancomycin.vanRC, Vancomycin.vanRD, Vancomycin.vanYD, Vancomycin.vanSB
+2021-04-09 00:17:07 INFO::Running selected normalization method: TSS
+2021-04-09 00:17:07 INFO::Total filtered features with variance filtering: 0
+2021-04-09 00:17:07 INFO::Filtered feature names from variance filtering:
+2021-04-09 00:17:07 INFO::Bypass z-score application to metadata
+2021-04-09 00:17:07 INFO::Running selected transform method: LOG
+2021-04-09 00:17:07 INFO::Running selected analysis method: LM
+2021-04-09 00:17:07 INFO::Fitting model to feature number 1, Aminoglycoside.aph4ib
+2021-04-09 00:17:07 INFO::Fitting model to feature number 2, Aminoglycoside.aac.6..ig
+2021-04-09 00:17:07 INFO::Fitting model to feature number 3, Aminoglycoside.aac.6..is_iu_ix
+2021-04-09 00:17:07 INFO::Fitting model to feature number 4, Aminoglycoside.aacA43
+2021-04-09 00:17:07 INFO::Fitting model to feature number 5, Aminoglycoside.aadA7
+2021-04-09 00:17:07 INFO::Fitting model to feature number 6, Aminoglycoside.acc3.iva
+2021-04-09 00:17:07 INFO::Fitting model to feature number 7, Aminoglycoside.aac.6..Iy
+2021-04-09 00:17:07 INFO::Fitting model to feature number 8, Aminoglycoside.aph6ia
+2021-04-09 00:17:07 INFO::Fitting model to feature number 9, Aminoglycoside.aac3.Via
+2021-04-09 00:17:07 INFO::Fitting model to feature number 10, Amphenicol.catQ
+2021-04-09 00:17:08 INFO::Fitting model to feature number 11, Amphenicol.cmlV
+2021-04-09 00:17:08 INFO::Fitting model to feature number 12, Beta_Lactam.blaOXY.1
+2021-04-09 00:17:08 INFO::Fitting model to feature number 13, Fluoroquinolone.qnrA
+2021-04-09 00:17:08 INFO::Fitting model to feature number 14, Fluoroquinolone.qepA_1_2
+2021-04-09 00:17:08 INFO::Fitting model to feature number 15, MDR.emrD
+2021-04-09 00:17:08 INFO::Fitting model to feature number 16, MDR.mtrD
+2021-04-09 00:17:08 INFO::Fitting model to feature number 17, MDR.tolC
+2021-04-09 00:17:08 INFO::Fitting model to feature number 18, MDR.marR
+2021-04-09 00:17:08 INFO::Fitting model to feature number 19, MDR.qacA.B
+2021-04-09 00:17:08 INFO::Fitting model to feature number 20, MDR.bexA.norM
+2021-04-09 00:17:08 INFO::Fitting model to feature number 21, MDR.czcA
+2021-04-09 00:17:08 INFO::Fitting model to feature number 22, MGEs.int1.a.marko
+2021-04-09 00:17:08 INFO::Fitting model to feature number 23, MGEs.IncP_oriT
+2021-04-09 00:17:08 INFO::Fitting model to feature number 24, MGEs.intI1F165_clinical
+2021-04-09 00:17:09 INFO::Fitting model to feature number 25, MGEs.ISPps1.pseud
+2021-04-09 00:17:09 INFO::Fitting model to feature number 26, MGEs.IS1111
+2021-04-09 00:17:09 INFO::Fitting model to feature number 27, MGEs.intl3
+2021-04-09 00:17:09 INFO::Fitting model to feature number 28, MGEs.mobA
+2021-04-09 00:17:09 INFO::Fitting model to feature number 29, MGEs.trb.C
+2021-04-09 00:17:09 INFO::Fitting model to feature number 30, MGEs.ISEcp1
+2021-04-09 00:17:10 INFO::Fitting model to feature number 31, MGEs.IS200_1
+2021-04-09 00:17:10 INFO::Fitting model to feature number 32, MGEs.IS1247
+2021-04-09 00:17:10 INFO::Fitting model to feature number 33, MGEs.IS200_2
+2021-04-09 00:17:10 INFO::Fitting model to feature number 34, MGEs.IS6100
+2021-04-09 00:17:10 INFO::Fitting model to feature number 35, MGEs.IncI1_repI1
+2021-04-09 00:17:10 INFO::Fitting model to feature number 36, MLSB.erm.35.
+2021-04-09 00:17:10 INFO::Fitting model to feature number 37, MLSB.mefA
+2021-04-09 00:17:11 INFO::Fitting model to feature number 38, Other.nisB
+2021-04-09 00:17:11 INFO::Fitting model to feature number 39, Other.mcr.1
+2021-04-09 00:17:11 INFO::Fitting model to feature number 40, Other.fabK
+2021-04-09 00:17:11 INFO::Fitting model to feature number 41, Sulfonamide.folA
+2021-04-09 00:17:11 INFO::Fitting model to feature number 42, Sulfonamide.sulA.folP
+2021-04-09 00:17:11 INFO::Fitting model to feature number 43, Tetracycline.tetD
+2021-04-09 00:17:11 INFO::Fitting model to feature number 44, Tetracycline.tetR
+2021-04-09 00:17:12 INFO::Fitting model to feature number 45, Tetracycline..tetPA
+2021-04-09 00:17:12 INFO::Fitting model to feature number 46, Vancomycin.vanC2.vanC3
+2021-04-09 00:17:12 INFO::Counting total values for each feature
+2021-04-09 00:17:12 INFO::Writing residuals to file /Users/karlavasco/OneDrive - Michigan State University/Zhang_lab/Marine_Iguana/results/maaslin2/smartchip_ct32_PE/residuals.rds
+2021-04-09 00:17:12 INFO::Writing all results to file (ordered by increasing q-values): /Users/karlavasco/OneDrive - Michigan State University/Zhang_lab/Marine_Iguana/results/maaslin2/smartchip_ct32_PE/all_results.tsv
+2021-04-09 00:17:12 INFO::Writing the significant results (those which are less than or equal to the threshold of 0.250000 ) to file (ordered by increasing q-values): /Users/karlavasco/OneDrive - Michigan State University/Zhang_lab/Marine_Iguana/results/maaslin2/smartchip_ct32_PE/significant_results.tsv
+2021-04-09 00:17:12 INFO::Writing heatmap of significant results to file: /Users/karlavasco/OneDrive - Michigan State University/Zhang_lab/Marine_Iguana/results/maaslin2/smartchip_ct32_PE/heatmap.pdf
+2021-04-09 00:17:12 INFO::Writing association plots (one for each significant association) to output folder: /Users/karlavasco/OneDrive - Michigan State University/Zhang_lab/Marine_Iguana/results/maaslin2/smartchip_ct32_PE
+2021-04-09 00:17:12 INFO::Plotting associations from most to least significant, grouped by metadata
+2021-04-09 00:17:12 INFO::Plotting data for metadata number 1, location
+2021-04-09 00:17:12 INFO::Creating boxplot for categorical data, location vs Aminoglycoside.aac.6..is_iu_ix
+2021-04-09 00:17:12 INFO::Creating boxplot for categorical data, location vs Fluoroquinolone.qnrA
+2021-04-09 00:17:13 INFO::Creating boxplot for categorical data, location vs MGEs.trb.C
+2021-04-09 00:17:13 INFO::Creating boxplot for categorical data, location vs Tetracycline..tetPA
+2021-04-09 00:17:13 INFO::Creating boxplot for categorical data, location vs MGEs.ISEcp1
+2021-04-09 00:17:14 INFO::Creating boxplot for categorical data, location vs Fluoroquinolone.qepA_1_2
+2021-04-09 00:17:14 INFO::Creating boxplot for categorical data, location vs Aminoglycoside.aadA7
+2021-04-09 00:17:14 INFO::Creating boxplot for categorical data, location vs Fluoroquinolone.qnrA
+2021-04-09 00:17:15 INFO::Creating boxplot for categorical data, location vs Tetracycline..tetPA
+2021-04-09 00:17:15 INFO::Creating boxplot for categorical data, location vs Amphenicol.cmlV
+2021-04-09 00:17:15 INFO::Creating boxplot for categorical data, location vs MDR.czcA
+2021-04-09 00:17:15 INFO::Creating boxplot for categorical data, location vs MDR.tolC
+2021-04-09 00:17:16 INFO::Creating boxplot for categorical data, location vs MGEs.IncP_oriT
+2021-04-09 00:17:16 INFO::Creating boxplot for categorical data, location vs MGEs.IS1247
+2021-04-09 00:17:16 INFO::Creating boxplot for categorical data, location vs Other.fabK
+2021-04-09 00:17:16 INFO::Creating boxplot for categorical data, location vs MGEs.IncP_oriT
+2021-04-09 00:17:16 INFO::Creating boxplot for categorical data, location vs MGEs.trb.C
+2021-04-09 00:17:17 INFO::Creating boxplot for categorical data, location vs Aminoglycoside.aph6ia
+2021-04-09 00:17:17 INFO::Creating boxplot for categorical data, location vs Aminoglycoside.aac3.Via
+2021-04-09 00:17:17 INFO::Creating boxplot for categorical data, location vs MGEs.intI1F165_clinical
+2021-04-09 00:17:17 INFO::Creating boxplot for categorical data, location vs MGEs.intl3
+2021-04-09 00:17:18 INFO::Creating boxplot for categorical data, location vs Other.nisB
+2021-04-09 00:17:18 INFO::Creating boxplot for categorical data, location vs Vancomycin.vanC2.vanC3
+2021-04-09 00:17:18 INFO::Creating boxplot for categorical data, location vs Aminoglycoside.aac.6..ig
+2021-04-09 00:17:19 INFO::Creating boxplot for categorical data, location vs Aminoglycoside.aacA43
+2021-04-09 00:17:19 INFO::Creating boxplot for categorical data, location vs Aminoglycoside.acc3.iva
+2021-04-09 00:17:19 INFO::Creating boxplot for categorical data, location vs MGEs.intl3
+2021-04-09 00:17:19 INFO::Creating boxplot for categorical data, location vs MGEs.IS6100
+2021-04-09 00:17:20 INFO::Creating boxplot for categorical data, location vs Sulfonamide.folA
+2021-04-09 00:17:20 INFO::Creating boxplot for categorical data, location vs Tetracycline.tetD
+2021-04-09 00:17:20 INFO::Creating boxplot for categorical data, location vs MLSB.mefA
+2021-04-09 00:17:21 INFO::Creating boxplot for categorical data, location vs Aminoglycoside.aac.6..Iy
+2021-04-09 00:17:21 INFO::Creating boxplot for categorical data, location vs MGEs.IncI1_repI1
+2021-04-09 00:17:21 INFO::Creating boxplot for categorical data, location vs MDR.tolC

@@ -1,0 +1,33 @@
+﻿class_gene,Island,LDA,p-value
+MDR | marR,Fernandina,3.431702698,0.011940169
+Aminoglycoside | aac3-Via,Fernandina,4.617578874,0.029042424
+MGEs | intI1F165-clinical,Fernandina,4.511833316,0.024533614
+MGEs,Fernandina,4.457037553,0.034611977
+MDR | bexA-norM,Fernandina,2.679500672,0.023565899
+Aminoglycoside,Fernandina,4.657374097,0.028597742
+MGEs | IncP-oriT,Fernandina,3.871835881,0.004633786
+Tetracycline | tetR,Fernandina,2.683638519,0.014238195
+Vancomycin | vanYD,Rabida,-3.21092579,0.006169899
+MGEs | lncF-FIC,Rabida,-3.216520849,0.006169899
+MLSB | ermQ ,Rabida,-3.569620075,0.006169899
+Aminoglycoside | aacA43,Rabida,-3.568609548,0.002198962
+MGEs | trbC,Rabida,-4.111780611,0.00021683
+MDR,Rabida,-4.713273633,0.002471557
+Aminoglycoside | aadA7,Rabida,-2.845766231,0.00035543
+Aminoglycoside | aadE,Rabida,-3.192413887,0.006169899
+Aminoglycoside | aphA3,Rabida,-3.480104742,0.006169899
+Beta-Lactam | blaGOB,Rabida,-3.016274367,0.01337085
+Other | fabK,Rabida,-3.577065952,0.034250089
+Other | pmrA,Rabida,-3.583655493,0.006169899
+MLSB | ermB,Rabida,-3.70547101,0.006169899
+MDR | czcA,Rabida,-4.76983037,0.001119385
+Tetracycline | tetPA,Rabida,-4.048605552,0.00611563
+MGEs | IncN-rep,Rabida,-2.401559893,0.035458529
+Aminoglycoside | aac-6-iv-ih,Rabida,-3.505669477,0.006169899
+Vancomycin | vanSB,Rabida,-3.444947641,0.006169899
+Tetracycline,Rabida,-4.079173889,0.010172014
+Tetracycline | tetM,Rabida,-3.628377153,0.006169899
+MDR | ttgA,Rabida,-2.850646287,9.55E-05
+Fluoroquinolone | qepA-1-2,Rabida,-2.921815436,0.024262667
+MGEs | IS1247,Rabida,-2.760839138,0.014717668
+MLSB | pica,Rabida,-3.256763996,0.006169899
