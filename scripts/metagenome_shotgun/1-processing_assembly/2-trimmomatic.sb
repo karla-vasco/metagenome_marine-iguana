@@ -42,7 +42,7 @@ java -jar $EBROOTTRIMMOMATIC/trimmomatic-0.39.jar PE -threads 8 -phred33 \
 $INPUT_DIRECTORY/${n}_R1*.fastq.gz $INPUT_DIRECTORY/${n}_R2*.fastq.gz \
 $OUTPUT_DIRECTORY/${n}_R1_paired.fastq.gz $OUTPUT_DIRECTORY/${n}_R1_unpaired.fastq.gz \
 $OUTPUT_DIRECTORY/${n}_R2_paired.fastq.gz $OUTPUT_DIRECTORY/${n}_R2_unpaired.fastq.gz \
-ILLUMINACLIP:$EBROOTTRIMMOMATIC/adapters/NexteraPE-PE.fa:2:30:10 \
+ILLUMINACLIP:$EBROOTTRIMMOMATIC/adapters/TruseqPE.fa:2:30:10 \
 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36 \
 2>$OUTPUT_DIRECTORY/${n}_trim.log
 done
